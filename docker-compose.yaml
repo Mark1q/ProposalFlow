@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  api:
+    build: ./server         
+    ports:
+      - "3000:3000"
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+    volumes:
+      - ./server:/app        
+      - /app/node_modules    
+    command: npm run dev
+
+  worker:
+    build: ./server          
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+    volumes:
+      - ./server:/app       
+      - /app/node_modules
+    command: npm run worker
+
+  ai-service:
+    build: ./ai-service      
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./ai-service:/app    
+    command: fastapi dev main.py

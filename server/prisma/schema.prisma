@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"] // docker
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String?   @unique
+  createdAt DateTime  @default(now())
+  scopes    Scope[]
+  proposals Proposal[]
+}
+
+model Scope {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  scopeJson Json
+  createdAt DateTime  @default(now())
+  proposals Proposal[]
+}
+
+model Proposal {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  scopeId       String
+  scope         Scope    @relation(fields: [scopeId], references: [id])
+  status        String   @default("pending")
+  finalMarkdown String?
+  pricingJson   Json?
+  createdAt     DateTime @default(now())
+}

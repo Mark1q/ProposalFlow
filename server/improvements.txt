@@ -1,0 +1,2 @@
+- Swagger JSDOC for documentation
+- Redis Langcache for LLM caching

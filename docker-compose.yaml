@@ -41,7 +41,6 @@ services:
       - ./server:/app        
       - /app/node_modules
       - /app/generated
-    command: sh -c "npx prisma generate && npm run dev"
 
   worker:
     build: ./server          
@@ -59,7 +58,6 @@ services:
       - ./server:/app       
       - /app/node_modules
       - /app/generated
-    command: sh -c "npx prisma generate && npm run worker"
 
   ai-service:
     build: ./ai-service      

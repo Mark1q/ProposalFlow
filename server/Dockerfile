@@ -15,5 +15,3 @@ RUN npx prisma generate
 
 # Copy the rest of the application
 COPY . .
-
-CMD ["npm", "run", "dev"]

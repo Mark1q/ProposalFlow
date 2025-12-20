@@ -22,8 +22,8 @@ const createProposal = async (req: Request<{}, {}, ProposalInput>, res: Response
 
         return res.status(200).json({ proposalId: proposal.id, status: proposal.status});
     } catch (error) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            return next(new AppError("Database error occurred", 500));
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code == "P2003") {
+            return next(new AppError("Invalid ID found", 500));
         }
 
         return next(new AppError(error instanceof Error ? error.message : "Internal server error", 500));
@@ -51,4 +51,25 @@ const getProposalStatus = async (req: Request<ProposalId>, res: Response, next: 
     }
 }
 
-export { createProposal, getProposalStatus }
+const getProposalData = async (req: Request<ProposalId>, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+
+    try {
+        const proposal = await prisma.proposal.findUniqueOrThrow({
+            where: {
+                id: id
+            },
+        })
+
+        return res.status(200).json(proposal);
+
+    } catch (error) {
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
+            return next(new AppError("Proposal not found", 404));
+        }
+
+        const msg = error instanceof Error ? error.message : "Unexpected error";
+        return next(new AppError(msg, 500));
+    }
+}
+export { createProposal, getProposalStatus, getProposalData }

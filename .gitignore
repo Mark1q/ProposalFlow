@@ -1,15 +1,15 @@
 .env
-.env.local
-.env.*.local
-server/.env
-ai-service/.env
+.env.*
 
-# Node
-node_modules
-__pycache__
-.git
-.venv
-.vscode
+# Dependencies
+node_modules/
+__pycache__/
 
-# Generated files
-server/generated/prisma
+# Build files
+.next/
+dist/
+build/
+server/generated/
+
+# IDE
+.vscode/

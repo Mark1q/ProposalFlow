@@ -39,6 +39,7 @@ async def generate(scope_json: ScopeInput):
     
     markdown_text = await generate_proposal_markdown(data_dict)
     
-    return {
-        "finalMarkdown": markdown_text
-    }
+    return JSONResponse(
+        content={"finalMarkdown": markdown_text},
+        media_type="application/json; charset=utf-8"
+    )

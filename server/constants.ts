@@ -1,3 +1,3 @@
-const DEMO_ID = "647b34a8-baab-47e0-a49b-6dd82ce7a9de";
+const DEMO_ID = "b2294fcb-5c33-4d58-b0e4-bef174f9b32a";
 
 export { DEMO_ID }

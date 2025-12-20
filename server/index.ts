@@ -1,4 +1,5 @@
 import express from 'express'
+import cors from 'cors'
 import { scopeRouter } from './routes/scope.route';
 import { proposalRouter } from './routes/proposal.route';
 import { errorHandling } from './middleware/error.middleware';
@@ -12,6 +13,7 @@ if (!CONNECTION_URL) {
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 app.get('/', (req, res) => {
     res.status(200).json({status: `Connected to port ${PORT}`});

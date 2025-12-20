@@ -2,3 +2,10 @@ node_modules
 __pycache__
 .git
 .env
+.env*
+.next
+*.log
+dist
+build
+coverage
+.DS_Store

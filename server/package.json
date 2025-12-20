@@ -12,13 +12,13 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
     "@types/joi": "^17.2.2",
     "@types/node": "^24.10.1",
     "@types/pg": "^8.15.6",
     "nodemon": "^3.1.11",
-    "prisma": "^7.1.0",
-    "ts-node": "^10.9.2",
+    "prisma": "^7.2.0",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   },
@@ -26,11 +26,15 @@
     "@bull-board/api": "^6.15.0",
     "@bull-board/express": "^6.15.0",
     "@prisma/adapter-pg": "^7.0.1",
-    "@prisma/client": "^7.1.0",
+    "@prisma/client": "^7.2.0",
     "bullmq": "^5.65.1",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "joi": "^18.0.2"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "type": "module"
 }

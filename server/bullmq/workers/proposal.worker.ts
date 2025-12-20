@@ -23,8 +23,6 @@ const proposalGenerationWorker = new Worker('proposal-processing', async (job: J
 
     const result = await generateProposalDetails(proposal.scope.scopeJson);
 
-    console.log(result.finalMarkdown);
-
     await prisma.proposal.update({
         data: {
             status: "completed",

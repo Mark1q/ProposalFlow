@@ -3,11 +3,11 @@ import cors from 'cors'
 import { scopeRouter } from './routes/scope.route';
 import { proposalRouter } from './routes/proposal.route';
 import { errorHandling } from './middleware/error.middleware';
-import { CONNECTION_URL, PORT} from './lib/env.variables';
+import { config } from './config/env.variables';
 import { serverAdapter } from './routes/bullboard.route';
 
 
-if (!CONNECTION_URL) {
+if (!config.dbUrl) {
     throw new Error("DATABASE_URL environment variable is missing.");
 }
 
@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(cors());
 
 app.get('/', (req, res) => {
-    res.status(200).json({status: `Connected to port ${PORT}`});
+    res.status(200).json({status: `Connected to port ${config.port}`});
 })
 
 app.use('/api/scope', scopeRouter);
@@ -25,8 +25,8 @@ app.use('/admin/queues', serverAdapter.getRouter());
 
 app.use(errorHandling);
 
-app.listen(PORT, () => {
-    console.log(`Listening to port ${PORT}`);
+app.listen(config.port, () => {
+    console.log(`Listening to port ${config.port}`);
 })
 
 

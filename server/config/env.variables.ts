@@ -11,8 +11,8 @@ export const config = {
     jwt: {
         accessSecret: process.env.ACCESS_TOKEN_SECRET!,
         refreshSecret: process.env.REFRESH_TOKEN_SECRET!,
-        accessExpiration: process.env.ACCESS_EXPIRATION!,
-        refreshExpiration: process.env.REFRESH_EXPIRATION!
+        accessExpiration: process.env.ACCESS_TOKEN_EXPIRY!,
+        refreshExpiration: process.env.REFRESH_TOKEN_EXPIRY!
     },
     pythonServiceUrl: process.env.PYTHON_SERVICE_URL,
 };

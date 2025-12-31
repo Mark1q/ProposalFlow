@@ -22,8 +22,8 @@ const createScope = async (req: Request<{}, {}, ScopeInput>, res: Response, next
 
         return res.status(200).json({ scope_id: scope.id });
     } catch (error) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            return next(new AppError("Database error occurred", 500));
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+            return next(new AppError(`UserId not found`, 404));
         }
         
         return next(new AppError(error instanceof Error ? error.message : "Internal server error", 500));

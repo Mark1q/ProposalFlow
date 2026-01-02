@@ -7,7 +7,7 @@ import { Prisma } from "../generated/prisma/client";
 import * as bcrypt from "bcryptjs"
 import { signAccessToken, signRefreshToken } from "../lib/auth.tokens";
 
-const registerUser = async (req: Request<RegisterInput>, res: Response, next: NextFunction) => {
+const registerUser = async (req: Request<{}, {}, RegisterInput>, res: Response, next: NextFunction) => {
     const { firstName, lastName, password, email } = req.body;
 
     try {
@@ -41,6 +41,6 @@ const registerUser = async (req: Request<RegisterInput>, res: Response, next: Ne
         
         return next(new AppError(error instanceof Error ? error.message : "Internal server error", 500));
     }
-}   
+}
 
 export { registerUser }

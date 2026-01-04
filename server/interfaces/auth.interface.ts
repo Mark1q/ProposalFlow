@@ -1,3 +1,5 @@
+import { JWTPayload } from "jose";
+
 type Roles = 'admin' | 'user' | 'guest';
 
 interface RegisterInput {
@@ -7,4 +9,14 @@ interface RegisterInput {
     lastName?: string
 }
 
-export { Roles, RegisterInput }
+interface LoginInput {
+    email: string,
+    password: string,
+}
+
+interface CustomJWTPayload extends JWTPayload {
+    id: string;
+    email: string;
+}
+
+export { Roles, RegisterInput, LoginInput, CustomJWTPayload }

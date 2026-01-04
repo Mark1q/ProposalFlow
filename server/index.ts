@@ -5,6 +5,8 @@ import { proposalRouter } from './routes/proposal.route';
 import { errorHandling } from './middleware/error.middleware';
 import { config } from './config/env.variables';
 import { serverAdapter } from './routes/bullboard.route';
+import { authRouter } from './routes/auth.route';
+import cookieParser from 'cookie-parser';
 
 
 if (!config.dbUrl) {
@@ -14,6 +16,7 @@ if (!config.dbUrl) {
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser());
 
 app.get('/', (req, res) => {
     res.status(200).json({status: `Connected to port ${config.port}`});
@@ -22,6 +25,7 @@ app.get('/', (req, res) => {
 app.use('/api/scope', scopeRouter);
 app.use('/api/proposal', proposalRouter);
 app.use('/admin/queues', serverAdapter.getRouter());
+app.use('/api/auth', authRouter);
 
 app.use(errorHandling);
 

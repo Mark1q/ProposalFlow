@@ -11,7 +11,7 @@ const authenticate = async (req: Request, res: Response, next: NextFunction) => 
     }
 
     try {
-        const jwtPayload = await verifyToken(token);
+        const jwtPayload = await verifyToken(token, 'access');
 
         if(!jwtPayload) { return next(new AppError("Invalid token", 401)); }
 
@@ -21,3 +21,5 @@ const authenticate = async (req: Request, res: Response, next: NextFunction) => 
         return next(new AppError("Internal server error", 500));
     }
 }
+
+export { authenticate }

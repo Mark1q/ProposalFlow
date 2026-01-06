@@ -20,9 +20,11 @@ const signRefreshToken = async (userId: string) => {
     .sign(REFRESH_SECRET);
 }
 
-const verifyToken = async (token: string) => {
+const verifyToken = async (token: string, secretType: 'access' | 'refresh') => {
+    const secret = secretType === 'access' ? ACCESS_SECRET : REFRESH_SECRET;
+
     try {
-        const { payload } = await jose.jwtVerify(token, ACCESS_SECRET);
+        const { payload } = await jose.jwtVerify(token, secret);
 
         return payload;
     } catch (error) {

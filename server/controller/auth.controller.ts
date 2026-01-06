@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express"
-import { LoginInput, RegisterInput } from "../interfaces/auth.interface"
+import { LoginInput, RefreshGenerateToken, RegisterInput } from "../interfaces/auth.interface"
 import { prisma } from "../lib/prisma"
 import { registerUserQueue } from "../bullmq/queues/auth.queue";
 import { AppError } from "../utils/AppError";
@@ -131,4 +131,38 @@ const logoutUser = async (req: Request, res: Response, next: NextFunction) => {
     });
 }
 
-export { registerUser, loginUser, logoutUser }
+const refreshAccessToken = async (req: Request, res: Response, next: NextFunction) => {
+    const token = req.cookies.refreshToken;
+
+    if (!token) {
+        return next(new AppError("Refresh token not found", 401));
+    }
+
+    try {
+        const jwtPayload = await verifyToken(token, 'refresh');
+
+        if (!jwtPayload) { 
+            return next(new AppError("Invalid or expired refresh token", 401)); 
+        }
+
+        const customPayload = jwtPayload as CustomJWTPayload;
+        
+        const accessToken = await signAccessToken(customPayload.id);
+
+        res.cookie('accessToken', accessToken, {
+            maxAge: 15 * 60 * 1000, 
+            httpOnly: true,
+            sameSite: 'strict'
+        });
+
+        return res.status(200).json({
+            status: "success",
+            message: "Access token refreshed"
+        });
+
+    } catch (error) {
+        return next(new AppError('Internal server error', 500));
+    }
+}
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken }

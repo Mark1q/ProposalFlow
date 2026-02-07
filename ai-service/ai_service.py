@@ -6,16 +6,17 @@ import json
 
 load_dotenv()
 
-model = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",
-    temperature=0.7,
-    max_tokens=2048,
-    max_retries=6,
-)
+def get_model():
+    return ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash",
+        temperature=0.7,
+        max_tokens=2048,
+        max_retries=6,
+    )
 
-async def generate_proposal_markdown(scopeJson: dict, audience: str = "mixed") -> str:
-    
+async def generate_proposal_markdown(scopeJson: dict) -> str:
     project_data_str = json.dumps(scopeJson, indent=2)
+    model = get_model()
     
     messages = [
         SystemMessage(content=SYSTEM_PROMPT),

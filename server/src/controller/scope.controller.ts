@@ -1,29 +1,29 @@
 import { NextFunction, Request, Response } from "express";
 import { ScopeId, ScopeInput } from "../interfaces/scope.interface";
 import { prisma } from "../lib/prisma";
-import { DEMO_ID } from "../constants";
 import { AppError } from "../utils/AppError";
 import { Prisma } from "../generated/prisma/client";
 
 const createScope = async (req: Request<{}, {}, ScopeInput>, res: Response, next: NextFunction) => {
     const scopeJson = req.body;
 
-    if (!scopeJson) res.status(400).json({error : "No JSON provided"})
-
+    if (!scopeJson) { return next(new AppError("Empty JSON Object provided", 401)); }
+    if (!req.user) { return next(new AppError("Authentication required", 401)); }
+    
     try {
         const scope = await prisma.scope.create({
             data : {
                 scopeJson: JSON.parse(JSON.stringify(scopeJson)),
                 user: {
-                    connect: {id: DEMO_ID}
+                    connect: { id: req.user.id }
                 },
             }
-        })
+        });
 
         return res.status(200).json({ scope_id: scope.id });
     } catch (error) {
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            return next(new AppError("Database error occurred", 500));
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+            return next(new AppError(`UserId not found`, 404));
         }
         
         return next(new AppError(error instanceof Error ? error.message : "Internal server error", 500));

@@ -1,4 +1,4 @@
-FROM node:22-alpine
+FROM node:24-alpine
 WORKDIR /app
 
 # Copy package files
@@ -10,8 +10,6 @@ RUN npm install
 # Copy prisma schema
 COPY prisma ./prisma/
 
-# Generate Prisma client at build time
-RUN npx prisma generate
-
-# Copy the rest of the application
-COPY . .
+# Copy source code
+COPY src ./src/
+COPY tsconfig.json ./

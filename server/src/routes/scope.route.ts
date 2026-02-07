@@ -2,6 +2,7 @@ import express from 'express'
 import { createScope, getScopeById } from '../controller/scope.controller';
 import { validate } from '../middleware/validate.schema';
 import { createScopeSchema } from '../validations/scope.validation';
+import { authenticate } from '../middleware/authenticate';
 
 const scopeRouter = express.Router()
 
@@ -14,7 +15,7 @@ const scopeRouter = express.Router()
  * @returns {object} 201 - Created scope
  * @returns {number} 201.scope_id - ID of the created scope
  */
-scopeRouter.post('/', validate(createScopeSchema) , createScope);
+scopeRouter.post('/', authenticate , validate(createScopeSchema) , createScope);
 scopeRouter.get('/:id', getScopeById);
 
 export { scopeRouter }

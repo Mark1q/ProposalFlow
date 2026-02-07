@@ -1,5 +1,5 @@
-import { delay, Job, Worker } from "bullmq";
-import { REDIS_HOST, REDIS_PORT } from "../../lib/env.variables";
+import { Job, Worker } from "bullmq";
+import { config } from "../../config/env.variables";
 import { prisma } from "../../lib/prisma";
 import { generateProposalDetails } from "../../controller/api.controller";
 
@@ -35,8 +35,8 @@ const proposalGenerationWorker = new Worker('proposal-processing', async (job: J
     
 }, {
     connection: {
-      host: REDIS_HOST,
-      port: typeof REDIS_PORT === 'string' ? parseInt(REDIS_PORT) : REDIS_PORT
+      host: config.redis.host,
+      port: parseInt(String(config.redis.port) || '6379', 10)
     }
 })
 

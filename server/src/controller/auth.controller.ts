@@ -48,7 +48,7 @@ const registerUser = async (req: Request<{}, {}, RegisterInput>, res: Response, 
             sameSite: 'strict'
         });
 
-        registerUserQueue.add("welcome-flow", { email: email, userId: user.id });
+        registerUserQueue.add("welcome-flow", { email: email, userId: user.id, name: user.firstName + " " + user.lastName });
 
         return res.status(201).json({
             message: "Logged in succesfully",

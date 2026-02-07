@@ -15,4 +15,5 @@ export const config = {
         refreshExpiration: process.env.REFRESH_TOKEN_EXPIRY!
     },
     pythonServiceUrl: process.env.PYTHON_SERVICE_URL,
+    emailApiKey: process.env.RESEND_API_KEY
 };

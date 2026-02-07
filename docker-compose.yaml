@@ -5,6 +5,7 @@ x-worker-base: &worker-base
       - REDIS_PORT=${REDIS_PORT:-6379}
       - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-proposalflow}?schema=public
       - PYTHON_SERVICE_URL=http://ai-service:8000/generate
+      - RESEND_API_KEY=${RESEND_API_KEY}
     depends_on:
       db:
         condition: service_healthy
@@ -15,7 +16,7 @@ x-worker-base: &worker-base
     volumes:
       - ./server:/app
       - server_node_modules:/app/node_modules
-      - server_generated:/app/generated
+      - server_generated:/app/src/generated
     command: sh -c "npm run worker"
 
 services:
@@ -58,8 +59,18 @@ services:
     volumes:
       - ./server:/app        
       - server_node_modules:/app/node_modules  
-      - server_generated:/app/generated        
-    command: sh -c "sleep 5 && npx prisma migrate dev && npx prisma db seed && npm run dev"
+      - /app/src/generated        
+    command: sh -c "sleep 5 && npx prisma generate && npx prisma db push && npx prisma db seed && npm run dev"
+    develop:
+      watch:
+        - action: rebuild
+          path: ./server/package.json
+        - action: sync
+          path: ./server
+          target: /app
+          ignore:
+            - node_modules/
+            - src/generated/
 
   worker-proposal:
     <<: *worker-base
@@ -79,7 +90,12 @@ services:
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
     volumes:
       - ./ai-service:/app
-    command: fastapi dev main.py --host 0.0.0.0
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'  # Limit CPU usage
+          memory: 512M
+    command: fastapi run main.py --host 0.0.0.0
   
   frontend:
     build: ./frontend
@@ -90,6 +106,7 @@ services:
       - frontend_node_modules:/app/node_modules
       - next_cache:/app/.next                   
     command: npm run dev -- -p 3001
+    
 
 volumes:
   postgres_data:

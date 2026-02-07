@@ -22,6 +22,13 @@ app.get('/', (req, res) => {
     res.status(200).json({status: `Connected to port ${config.port}`});
 })
 
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'healthy', 
+    timestamp: new Date().toISOString() 
+  });
+});
+
 app.use('/api/scope', scopeRouter);
 app.use('/api/proposal', proposalRouter);
 app.use('/admin/queues', serverAdapter.getRouter());

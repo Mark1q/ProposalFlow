@@ -1,7 +1,7 @@
-import { prisma } from "../lib/prisma";
+import { prisma } from "../src/lib/prisma";
 import { faker } from "@faker-js/faker";
 import * as bcrypt from "bcryptjs"
-import { RegisterInput } from "../interfaces/auth.interface";
+import { RegisterInput } from "../src/interfaces/auth.interface";
 
 const generateUsers = async (): Promise<RegisterInput[]> => {
   const hashedPassword = await bcrypt.hash('password123', 10);
@@ -39,6 +39,7 @@ const generateScopes = async () => {
 
 async function main() {
   console.log('Cleaning up database...');
+  await prisma.scope.deleteMany();
   await prisma.user.deleteMany();
 
   console.log('🌱 Seeding database...');

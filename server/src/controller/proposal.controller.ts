@@ -23,7 +23,7 @@ const createProposal = async (req: Request<{}, {}, ProposalInput>, res: Response
         return res.status(200).json({ proposalId: proposal.id, status: proposal.status});
     } catch (error) {
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code == "P2003") {
-            return next(new AppError("Invalid ID found", 404));
+            return next(new AppError("Invalid ID found", 400));
         }
 
         return next(new AppError(error instanceof Error ? error.message : "Internal server error", 500));

@@ -7,12 +7,11 @@ import { Prisma } from "../generated/prisma/client";
 import * as bcrypt from "bcryptjs"
 import { signAccessToken, signRefreshToken, verifyToken } from "../lib/auth.tokens";
 import { DUMMY_HASH } from "../constants";
-import { CustomJWTPayload } from '../interfaces/auth.interface'
 
 declare global {
   namespace Express {
     interface Request {
-      user?: CustomJWTPayload;
+      user?: { id: string };
     }
   }
 }
@@ -39,7 +38,7 @@ const registerUser = async (req: Request<{}, {}, RegisterInput>, res: Response, 
             maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
             httpOnly: true,
             sameSite: 'strict',
-            path: '/auth/refresh'
+            path: '/api/auth/refresh'
         })
 
         res.cookie('accessToken', accessToken, {
@@ -51,7 +50,7 @@ const registerUser = async (req: Request<{}, {}, RegisterInput>, res: Response, 
         registerUserQueue.add("welcome-flow", { email: email, userId: user.id, name: user.firstName + " " + user.lastName });
 
         return res.status(201).json({
-            message: "Logged in succesfully",
+            message: "Logged in successfully",
             user: {
                 id: user.id,
                 firstName: user.firstName
@@ -90,7 +89,7 @@ const loginUser = async (req: Request<{}, {}, LoginInput>, res: Response, next: 
             maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
             httpOnly: true,
             sameSite: 'strict',
-            path: '/auth/refresh'
+            path: '/api/auth/refresh'
         })
 
         res.cookie('accessToken', accessToken, {
@@ -100,7 +99,7 @@ const loginUser = async (req: Request<{}, {}, LoginInput>, res: Response, next: 
         });
 
         return res.status(200).json({
-            message: "Logged in succesfully",
+            message: "Logged in successfully",
             user: {
                 id: user.id,
                 firstName: user.firstName
@@ -117,10 +116,9 @@ const logoutUser = async (req: Request, res: Response, next: NextFunction) => {
         httpOnly: true,
         sameSite: 'strict',
     });
-
     
     res.clearCookie("refreshToken", {
-        path: '/auth/refresh', 
+        path: '/api/auth/refresh', 
         httpOnly: true,
         sameSite: 'strict',
     });
@@ -144,10 +142,8 @@ const refreshAccessToken = async (req: Request, res: Response, next: NextFunctio
         if (!jwtPayload) { 
             return next(new AppError("Invalid or expired refresh token", 401)); 
         }
-
-        const customPayload = jwtPayload as CustomJWTPayload;
         
-        const accessToken = await signAccessToken(customPayload.id);
+        const accessToken = await signAccessToken(jwtPayload.sub as string);
 
         res.cookie('accessToken', accessToken, {
             maxAge: 15 * 60 * 1000, 

@@ -42,8 +42,8 @@ jobs:
       - name: Run Postman Collection
         uses: anthonyvscode/newman-action@v1
         with:
-          collection: tests/postman/collection.json
-          environment: tests/postman/environment.json
+          collection: server/tests/postman/collection.json
+          environment: server/tests/postman/environment.json
           reporters: cli
           
       - name: Dump Docker logs on failure

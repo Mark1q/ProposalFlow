@@ -1,0 +1,51 @@
+name: API Integration Tests
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'server/**'
+      - '.github/workflows/api-tests.yml'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'server/**'
+
+jobs:
+  test-api:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Create .env file for Docker
+      - name: Create .env file
+        run: |
+          echo "POSTGRES_USER=postgres" >> .env
+          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+          echo "POSTGRES_DB=proposalflow" >> .env
+          echo "REDIS_PORT=6379" >> .env
+          echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}" >> .env
+          echo "RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}" >> .env
+          echo "PORT=3000" >> .env
+
+      - name: Start containers
+        run: docker compose up -d --build api
+
+      - name: Wait for API to be ready
+        run: |
+          echo "Waiting for API to start..."
+          timeout 60s bash -c 'until curl --silent --output /dev/null http://localhost:3000; do sleep 2; done'
+          echo "API is up!"
+
+      - name: Run Postman Collection
+        uses: anthonyvscode/newman-action@v1
+        with:
+          collection: tests/postman/collection.json
+          environment: tests/postman/environment.json
+          reporters: cli
+          
+      - name: Dump Docker logs on failure
+        if: failure()
+        run: docker compose logs api

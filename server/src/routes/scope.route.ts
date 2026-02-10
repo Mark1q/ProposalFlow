@@ -16,6 +16,6 @@ const scopeRouter = express.Router()
  * @returns {number} 201.scope_id - ID of the created scope
  */
 scopeRouter.post('/', authenticate , validate(createScopeSchema) , createScope);
-scopeRouter.get('/:id', getScopeById);
+scopeRouter.get('/:id', getScopeById); // TODO: add authenticate middleware
 
 export { scopeRouter }

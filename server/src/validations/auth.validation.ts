@@ -10,7 +10,6 @@ const registerUserSchema = Joi.object({
 const loginUserSchema = Joi.object({
     email: Joi.string().required().email(),
     password: Joi.string().required(),
-    accessToken: Joi.string().regex(/^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/).required()
 });
 
 export { registerUserSchema, loginUserSchema }

@@ -13,7 +13,11 @@ const generateUsers = async (): Promise<RegisterInput[]> => {
     password: hashedPassword
   }));
 
-  return users;
+  return [...users, {
+    // Test user to use during testing for login
+    email: "test@example.com",
+    password: hashedPassword
+  }];
 }
 
 const generateScopes = async () => {

@@ -14,13 +14,8 @@ interface LoginInput {
     password: string,
 }
 
-interface CustomJWTPayload extends JWTPayload {
-    id: string;
-    email: string;
-}
-
 interface RefreshGenerateToken {
     token: string
 }
 
-export { Roles, RegisterInput, LoginInput, CustomJWTPayload, RefreshGenerateToken }
+export { Roles, RegisterInput, LoginInput, RefreshGenerateToken }

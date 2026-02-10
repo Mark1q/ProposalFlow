@@ -39,12 +39,15 @@ jobs:
           timeout 60s bash -c 'until curl --silent --output /dev/null http://localhost:3000; do sleep 2; done'
           echo "API is up!"
 
+      - name: Install Newman
+        run: npm install -g newman
+
+      
       - name: Run Postman Collection
-        uses: anthonyvscode/newman-action@v1
-        with:
-          collection: server/tests/postman/collection.json
-          environment: server/tests/postman/environment.json
-          reporters: cli
+        run: |
+          newman run server/tests/postman/collection.json \
+          -e server/tests/postman/environment.json \
+          --reporters cli
           
       - name: Dump Docker logs on failure
         if: failure()

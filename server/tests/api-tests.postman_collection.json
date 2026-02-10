@@ -1,0 +1,1774 @@
+{
+  "info": {
+    "_postman_id": "17c737ef-71be-4f39-9e48-b227bd75daab",
+    "name": "api-tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "51970746",
+    "_collection_link": "https://go.postman.co/collection/51970746-17c737ef-71be-4f39-9e48-b227bd75daab?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "auth-flow",
+      "item": [
+        {
+          "name": "register",
+          "item": [
+            {
+              "name": "Valid User",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 201\", function () {\r",
+                      "  pm.response.to.have.status(201);\r",
+                      "});\r",
+                      "\r",
+                      "/**\r",
+                      " * Check if the response time is less than 1000ms.\r",
+                      " * Chose the value 1000ms as bcrypt is intentionally slow (400-500ms) \r",
+                      " * as opposed to usual checks for 200ms or less\r",
+                      " */\r",
+                      "pm.test(\"Response time is less than 1000ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Access token cookie is set\", function() {\r",
+                      "    pm.expect(pm.cookies.has('accessToken')).to.be.true;\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"ok@example.com\",\r\n    \"password\": \"password123\",\r\n    \"firstName\": \"Mark\",\r\n    \"lastName\": \"Smith\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/auth/register",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Missing Email",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {\r",
+                      "  pm.response.to.have.status(400);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Error message contains email and required\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.error).to.include(\"Incorrect data format\");\r",
+                      "    pm.expect(jsonData.details).to.include(\"email\");\r",
+                      "    pm.expect(jsonData.details).to.include(\"required\");\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"password\": \"password123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/auth/register",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Invalid Email Format",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {\r",
+                      "  pm.response.to.have.status(400);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Error message contains email and valid\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.error).to.include(\"Incorrect data format\");\r",
+                      "    pm.expect(jsonData.details).to.include(\"email\");\r",
+                      "    pm.expect(jsonData.details).to.include(\"valid\");\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\" : \"invalid-email.com\",\r\n    \"password\": \"password123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/auth/register",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Duplicate Email",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {\r",
+                      "  pm.response.to.have.status(400);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Error message contains email already exists\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.include(\"email already exists\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"ok@example.com\",\r\n    \"password\": \"password123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/auth/register",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Missing Password",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {\r",
+                      "  pm.response.to.have.status(400);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Error message contains password and required\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.error).to.include(\"Incorrect data format\");\r",
+                      "    pm.expect(jsonData.details).to.include(\"password\");\r",
+                      "    pm.expect(jsonData.details).to.include(\"required\");\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\":\"missing-email@example.com\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/auth/register",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Invalid Password - Too Short",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {\r",
+                      "  pm.response.to.have.status(400);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Error message contains password and minimum length\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.error).to.include(\"Incorrect data format\");\r",
+                      "    pm.expect(jsonData.details).to.include(\"password\");\r",
+                      "    pm.expect(jsonData.details).to.include(\"length\");\r",
+                      "    pm.expect(jsonData.details).to.include(\"at least\");\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\":\"ok@example.com\",\r\n    \"password\": \"short\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/auth/register",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Invalid Password - Too Long",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {\r",
+                      "  pm.response.to.have.status(400);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Error message contains password and maximum length\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.error).to.include(\"Incorrect data format\");\r",
+                      "    pm.expect(jsonData.details).to.include(\"password\");\r",
+                      "    pm.expect(jsonData.details).to.include(\"length\");\r",
+                      "    pm.expect(jsonData.details).to.include(\"less than or equal\");\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\":\"ok@example.com\",\r\n    \"password\": \"loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/auth/register",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "login",
+          "item": [
+            {
+              "name": "Valid User",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Response time is less than 1000ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Access token cookie is set\", function() {\r",
+                      "    pm.expect(pm.cookies.has('accessToken')).to.be.true;\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Response has user data\", function() {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.eql(\"Logged in successfully\");\r",
+                      "    pm.expect(jsonData.user).to.have.property('id');\r",
+                      "    pm.expect(jsonData.user).to.have.property('firstName');\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"ok@example.com\",\r\n    \"password\": \"password123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/auth/login",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Missing Email",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {\r",
+                      "  pm.response.to.have.status(400);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Error message contains email and required\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.error).to.include(\"Incorrect data format\");\r",
+                      "    pm.expect(jsonData.details).to.include(\"email\");\r",
+                      "    pm.expect(jsonData.details).to.include(\"required\");\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"password\": \"password123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/auth/login",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Invalid Email Format",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {\r",
+                      "  pm.response.to.have.status(400);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Error message contains email and valid\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.error).to.include(\"Incorrect data format\");\r",
+                      "    pm.expect(jsonData.details).to.include(\"email\");\r",
+                      "    pm.expect(jsonData.details).to.include(\"valid\");\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\" : \"invalid-email.com\",\r\n    \"password\": \"password123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/auth/login",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Missing Password",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {\r",
+                      "  pm.response.to.have.status(400);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Error message contains password and required\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.error).to.include(\"Incorrect data format\");\r",
+                      "    pm.expect(jsonData.details).to.include(\"password\");\r",
+                      "    pm.expect(jsonData.details).to.include(\"required\");\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\":\"missing-email@example.com\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/auth/login",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Invalid Credentials",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {\r",
+                      "  pm.response.to.have.status(401);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Error message indicates invalid credentials\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.include(\"Invalid email or password\");\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"ok@example.com\",\r\n    \"password\": \"wrong-password\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/auth/login",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "token-flow",
+          "item": [
+            {
+              "name": "Register",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 201\", function () {\r",
+                      "    pm.response.to.have.status(201);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Response time is less than 1000ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Access token cookie is set\", function() {\r",
+                      "    pm.expect(pm.cookies.has('accessToken')).to.be.true;\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Response has user data\", function() {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.eql(\"Logged in successfully\");\r",
+                      "    pm.expect(jsonData.user).to.have.property('id');\r",
+                      "    pm.expect(jsonData.user).to.have.property('firstName');\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"rgstr@example.com\",\r\n    \"password\": \"password123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/auth/register",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Access Protected Enpoint",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Scope data is returned\", function() {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData).to.have.property('scope_id');\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"projectName\": \"Project A\",\r\n    \"businessGoal\": \"Increase customer satisfaction\",\r\n    \"features\": [\"Feature 1\",\r\n        \"Feature 2\",\r\n        \"Feature 3\"\r\n    ],\r\n    \"techStack\": [\"React\", \"Node.js\",\r\n        \"MongoDB\"\r\n    ],\r\n    \"budget\": \"100000\",\r\n    \"timeline\": \"6 months\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/scope",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "scope"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Refresh Token",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"New access token cookie is set\", function() {\r",
+                      "    pm.expect(pm.cookies.has('accessToken')).to.be.true;\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Refresh token cookie exists\", function() {\r",
+                      "    pm.expect(pm.cookies.has('refreshToken')).to.be.true;\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}api/auth/refresh",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "auth",
+                    "refresh"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Access Protected Enpoint",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Scope data is returned\", function() {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData).to.have.property('scope_id');\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"projectName\": \"Project A\",\r\n    \"businessGoal\": \"Increase customer satisfaction\",\r\n    \"features\": [\"Feature 1\",\r\n        \"Feature 2\",\r\n        \"Feature 3\"\r\n    ],\r\n    \"techStack\": [\"React\", \"Node.js\",\r\n        \"MongoDB\"\r\n    ],\r\n    \"budget\": \"100000\",\r\n    \"timeline\": \"6 months\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/scope",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "scope"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Logout",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Success message returned\", function() {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.status).to.eql(\"success\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\":\"ok4@example.com\",\r\n    \"password\": \"password123\"\r\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}api/auth/logout",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "auth",
+                    "logout"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Access Protected Enpoint",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 401\", function () {\r",
+                      "    pm.response.to.have.status(401);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Returns correct auth error\", function() {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.include(\"not logged in\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"projectName\": \"Project A\",\r\n    \"businessGoal\": \"Increase customer satisfaction\",\r\n    \"features\": [\"Feature 1\",\r\n        \"Feature 2\",\r\n        \"Feature 3\"\r\n    ],\r\n    \"techStack\": [\"React\", \"Node.js\",\r\n        \"MongoDB\"\r\n    ],\r\n    \"budget\": \"100000\",\r\n    \"timeline\": \"6 months\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/scope",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "scope"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "scope",
+      "item": [
+        {
+          "name": "auth-setup",
+          "item": [
+            {
+              "name": "Not Logged In",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 401\", function () {\r",
+                      "    pm.response.to.have.status(401);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Error message for missing auth\", function () {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.include(\"not logged in\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"projectName\": \"Project A\",\r\n    \"businessGoal\": \"Increase customer satisfaction\",\r\n    \"features\": [\"Feature 1\",\r\n        \"Feature 2\",\r\n        \"Feature 3\"\r\n    ],\r\n    \"techStack\": [\"React\", \"Node.js\",\r\n        \"MongoDB\"\r\n    ],\r\n    \"budget\": \"100000\",\r\n    \"timeline\": \"6 months\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/scope",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "scope"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Response time is less than 1000ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Access token cookie is set\", function() {\r",
+                      "    pm.expect(pm.cookies.has('accessToken')).to.be.true;\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Response has user data\", function() {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.eql(\"Logged in successfully\");\r",
+                      "    pm.expect(jsonData.user).to.have.property('id');\r",
+                      "    pm.expect(jsonData.user).to.have.property('firstName');\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"test@example.com\",\r\n    \"password\": \"password123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/auth/login",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "create-scope",
+          "item": [
+            {
+              "name": "Valid Request",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Response has scope_id\", function () {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData).to.have.property(\"scope_id\");\r",
+                      "    pm.expect(jsonData.scope_id).to.be.a(\"string\");\r",
+                      "    \r",
+                      "    // Save for later tests\r",
+                      "    pm.environment.set(\"scope_id\", jsonData.scope_id);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"projectName\": \"Project A\",\r\n    \"businessGoal\": \"Increase customer satisfaction\",\r\n    \"features\": [\"Feature 1\",\r\n        \"Feature 2\",\r\n        \"Feature 3\"\r\n    ],\r\n    \"techStack\": [\"React\", \"Node.js\",\r\n        \"MongoDB\"\r\n    ],\r\n    \"budget\": \"100000\",\r\n    \"timeline\": \"6 months\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/scope",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "scope"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Missing Required Fields",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {\r",
+                      "    pm.response.to.have.status(400);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Validation error message contains required\", function () {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.details).to.include(\"required\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"businessGoal\": \"Increase customer satisfaction\",\r\n    \"features\": [\"Feature 1\",\r\n        \"Feature 2\",\r\n        \"Feature 3\"\r\n    ],\r\n    \"techStack\": [\"React\", \"Node.js\",\r\n        \"MongoDB\"\r\n    ],\r\n    \"budget\": \"100000\",\r\n    \"timeline\": \"6 months\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/scope",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "scope"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Invalid Budget",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {\r",
+                      "    pm.response.to.have.status(400);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Error message contains positive number\", function () {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.details).to.include(\"positive number\")\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"projectName\": \"Project A\",\r\n    \"businessGoal\": \"Increase customer satisfaction\",\r\n    \"features\": [\"Feature 1\",\r\n        \"Feature 2\",\r\n        \"Feature 3\"\r\n    ],\r\n    \"techStack\": [\"React\", \"Node.js\",\r\n        \"MongoDB\"\r\n    ],\r\n    \"budget\": \"-10000\",\r\n    \"timeline\": \"6 months\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/scope",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "scope"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Empty Arrays",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400\", function () {\r",
+                      "    pm.response.to.have.status(400);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Incorrect data format message\", function () {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.details).to.include(\"must contain at least 1 items\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"projectName\": \"Project A\",\r\n    \"businessGoal\": \"Increase customer satisfaction\",\r\n    \"features\": [],\r\n    \"techStack\": [\"React\", \"Node.js\",\r\n        \"MongoDB\"\r\n    ],\r\n    \"budget\": \"100000\",\r\n    \"timeline\": \"6 months\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/scope",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "scope"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "get-by-id",
+          "item": [
+            {
+              "name": "Success",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// Test 6: Get Scope by ID Success\r",
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Response has correct structure\", function () {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData).to.have.all.keys(\"id\", \"scopeJson\", \"createdAt\");\r",
+                      "    pm.expect(jsonData.id).to.eql(pm.environment.get(\"scope_id\"));\r",
+                      "    pm.expect(jsonData.scopeJson).to.have.property(\"projectName\");\r",
+                      "    pm.expect(jsonData.scopeJson).to.have.property(\"budget\");\r",
+                      "    pm.expect(jsonData.createdAt).to.be.a(\"string\");\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Scope JSON matches created data\", function () {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    const scopeJson = jsonData.scopeJson;\r",
+                      "    pm.expect(scopeJson.projectName).to.eql(\"Project A\");\r",
+                      "    pm.expect(scopeJson.budget).to.eql(\"100000\");\r",
+                      "    pm.expect(scopeJson.features).to.be.an(\"array\").with.lengthOf(3);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}api/scope/{{scope_id}}",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "scope",
+                    "{{scope_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Invalid Id",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 404\", function () {\r",
+                      "    pm.expect(pm.response.code).to.eql(404);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Error message returned\", function () {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData).to.have.property(\"message\");\r",
+                      "    pm.expect(jsonData.message).to.include(\"not found\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/scope/123",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "scope",
+                    "123"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "proposal",
+      "item": [
+        {
+          "name": "auth-setup",
+          "item": [
+            {
+              "name": "Not Logged In",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 401\", function () {\r",
+                      "    pm.response.to.have.status(401);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Error message for missing auth\", function () {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.include(\"not logged in\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"projectName\": \"Project A\",\r\n    \"businessGoal\": \"Increase customer satisfaction\",\r\n    \"features\": [\"Feature 1\",\r\n        \"Feature 2\",\r\n        \"Feature 3\"\r\n    ],\r\n    \"techStack\": [\"React\", \"Node.js\",\r\n        \"MongoDB\"\r\n    ],\r\n    \"budget\": \"100000\",\r\n    \"timeline\": \"6 months\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/proposal/start",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "proposal",
+                    "start"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Response time is less than 1000ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Access token cookie is set\", function() {\r",
+                      "    pm.expect(pm.cookies.has('accessToken')).to.be.true;\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Response has user data\", function() {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.eql(\"Logged in successfully\");\r",
+                      "    pm.expect(jsonData.user).to.have.property('id');\r",
+                      "    pm.expect(jsonData.user).to.have.property('firstName');\r",
+                      "});\r",
+                      "\r",
+                      "// Set user_id environment variable for future requests.\r",
+                      "pm.environment.set(\"user_id\", pm.response.json().user.id)"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"test@example.com\",\r\n    \"password\": \"password123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/auth/login",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "create-proposal",
+          "item": [
+            {
+              "name": "Valid Request",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function() {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Response has proposalId and status\", function() {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData).to.have.property(\"proposalId\");\r",
+                      "    pm.expect(jsonData).to.have.property(\"status\");\r",
+                      "    pm.expect(jsonData.status).to.eql(\"pending\"); // Assuming initial status\r",
+                      "    \r",
+                      "    // Save for later tests\r",
+                      "    pm.environment.set(\"proposal_id\", jsonData.proposalId);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"scopeId\": \"{{scope_id}}\",\r\n    \"userId\": \"{{user_id}}\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/proposal/start",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "proposal",
+                    "start"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Invalid Id",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 404\", function() {\r",
+                      "    pm.response.to.have.status(404);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Invalid ID error message\", function() {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.include(\"Invalid ID\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"scopeId\": \"123\",\r\n    \"userId\": \"234\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/proposal/start",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "proposal",
+                    "start"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Missing Required Fileds",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 400 for validation error\", function() {\r",
+                      "    pm.response.to.have.status(400);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Validation error message\", function() {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.details).to.include(\"required\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"scopeId\": \"123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/proposal/start",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "proposal",
+                    "start"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "get-status",
+          "item": [
+            {
+              "name": "Not Found",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 404\", function() {\r",
+                      "    pm.response.to.have.status(404);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Proposal not found message\", function() {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.include(\"not found\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}api/proposal/123/status",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "proposal",
+                    "123",
+                    "status"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Success",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function() {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Response has correct structure\", function() {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData).to.have.all.keys(\"proposalId\", \"status\");\r",
+                      "    pm.expect(jsonData.proposalId).to.eql(pm.environment.get(\"proposal_id\"));\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Status is valid enum value\", function() {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    const validStatuses = [\"pending\", \"processing\", \"completed\", \"failed\"];\r",
+                      "    pm.expect(validStatuses).to.include(jsonData.status);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}api/proposal/{{proposal_id}}/status",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "proposal",
+                    "{{proposal_id}}",
+                    "status"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "get-proposal",
+          "item": [
+            {
+              "name": "Not Found",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 404\", function() {\r",
+                      "    pm.response.to.have.status(404);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Proposal not found message\", function() {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.include(\"not found\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}api/proposal/123",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "proposal",
+                    "123"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Success",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function() {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Response has complete proposal data\", function() {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData).to.have.property(\"id\");\r",
+                      "    pm.expect(jsonData).to.have.property(\"scopeId\");\r",
+                      "    pm.expect(jsonData).to.have.property(\"userId\");\r",
+                      "    pm.expect(jsonData).to.have.property(\"status\");\r",
+                      "    pm.expect(jsonData).to.have.property(\"createdAt\");\r",
+                      "    // Check for generatedContent if it exists\r",
+                      "    if (jsonData.generatedContent) {\r",
+                      "        pm.expect(jsonData.generatedContent).to.be.an(\"object\");\r",
+                      "    }\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"ID matches requested ID\", function() {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.id).to.eql(pm.environment.get(\"proposal_id\"));\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}api/proposal/{{proposal_id}}",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "proposal",
+                    "{{proposal_id}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

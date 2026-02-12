@@ -35,7 +35,9 @@
                       "\r",
                       "pm.test(\"Access token cookie is set\", function() {\r",
                       "    pm.expect(pm.cookies.has('accessToken')).to.be.true;\r",
-                      "});"
+                      "});\r",
+                      "\r",
+                      "pm.collectionVariables.set(\"current_user_email\", JSON.parse(pm.request.body.raw).email);"
                     ],
                     "type": "text/javascript",
                     "packages": {},
@@ -48,7 +50,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"email\": \"ok@example.com\",\r\n    \"password\": \"password123\",\r\n    \"firstName\": \"Mark\",\r\n    \"lastName\": \"Smith\"\r\n}",
+                  "raw": "{\r\n    \"email\": \"user_{{$randomInt}}@example.com\",\r\n    \"password\": \"password123\",\r\n    \"firstName\": \"Mark\",\r\n    \"lastName\": \"Smith\"\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -404,7 +406,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"email\": \"ok@example.com\",\r\n    \"password\": \"password123\"\r\n}",
+                  "raw": "{\r\n    \"email\": \"{{current_user_email}}\",\r\n    \"password\": \"password123\"\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -598,7 +600,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"email\": \"ok@example.com\",\r\n    \"password\": \"wrong-password\"\r\n}",
+                  "raw": "{\r\n    \"email\": \"{{current_user_email}}\",\r\n    \"password\": \"wrong-password\"\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -647,7 +649,9 @@
                       "    pm.expect(jsonData.message).to.eql(\"Logged in successfully\");\r",
                       "    pm.expect(jsonData.user).to.have.property('id');\r",
                       "    pm.expect(jsonData.user).to.have.property('firstName');\r",
-                      "});"
+                      "});\r",
+                      "\r",
+                      "pm.collectionVariables.set(\"token_flow_email\", JSON.parse(pm.request.body.raw).email);"
                     ],
                     "type": "text/javascript",
                     "packages": {},
@@ -660,7 +664,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"email\": \"rgstr@example.com\",\r\n    \"password\": \"password123\"\r\n}",
+                  "raw": "{\r\n    \"email\": \"token_{{$randomInt}}@example.com\",\r\n    \"password\": \"password123\"\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -838,10 +842,6 @@
               "request": {
                 "method": "POST",
                 "header": [],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"email\":\"ok4@example.com\",\r\n    \"password\": \"password123\"\r\n}"
-                },
                 "url": {
                   "raw": "{{base_url}}api/auth/logout",
                   "host": [
@@ -994,7 +994,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"email\": \"test@example.com\",\r\n    \"password\": \"password123\"\r\n}",
+                  "raw": "{\r\n    \"email\": \"{{current_user_email}}\",\r\n    \"password\": \"password123\"\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1325,6 +1325,44 @@
           "name": "auth-setup",
           "item": [
             {
+              "name": "Logout",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Success message returned\", function() {\r",
+                      "    const jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.status).to.eql(\"success\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}api/auth/logout",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "auth",
+                    "logout"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
               "name": "Not Logged In",
               "event": [
                 {
@@ -1351,7 +1389,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"projectName\": \"Project A\",\r\n    \"businessGoal\": \"Increase customer satisfaction\",\r\n    \"features\": [\"Feature 1\",\r\n        \"Feature 2\",\r\n        \"Feature 3\"\r\n    ],\r\n    \"techStack\": [\"React\", \"Node.js\",\r\n        \"MongoDB\"\r\n    ],\r\n    \"budget\": \"100000\",\r\n    \"timeline\": \"6 months\"\r\n}",
+                  "raw": "{\r\n    \"scopeId\": \"{{scope_id}}\",\r\n    \"userId\": \"{{user_id}}\"\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1411,7 +1449,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"email\": \"test@example.com\",\r\n    \"password\": \"password123\"\r\n}",
+                  "raw": "{\r\n    \"email\": \"{{current_user_email}}\",\r\n    \"password\": \"password123\"\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1769,6 +1807,16 @@
           ]
         }
       ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "current_user_email",
+      "value": ""
+    },
+    {
+      "key": "token_flow_email",
+      "value": ""
     }
   ]
 }

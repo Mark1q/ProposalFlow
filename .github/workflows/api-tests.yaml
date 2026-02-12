@@ -31,7 +31,12 @@ jobs:
           echo "PORT=3000" >> .env
 
       - name: Start containers
-        run: docker compose up -d --build api
+        run: docker compose up -d --build
+
+      - name: Setup Database (Migrations + Seed)
+        run: |
+          docker compose exec -T api npx prisma migrate deploy
+          docker compose exec -T api npx prisma db seed
 
       - name: Wait for API to be ready
         run: |

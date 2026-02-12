@@ -4,12 +4,11 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
+# Copy the prisma folder (needed for postinstall to work properly)
+COPY prisma ./prisma/
+
 # Install dependencies
 RUN npm install
 
-# Copy prisma schema
-COPY prisma ./prisma/
-
 # Copy source code
-COPY src ./src/
-COPY tsconfig.json ./
+COPY . .

@@ -43,6 +43,7 @@ const generateScopes = async () => {
 
 async function main() {
   console.log('Cleaning up database...');
+  await prisma.proposal.deleteMany();
   await prisma.scope.deleteMany();
   await prisma.user.deleteMany();
 

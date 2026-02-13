@@ -6,7 +6,7 @@ import { config } from '../config/env.variables';
 const createRateLimiter = (windowMs: number, max: number, prefix: string = 'rl') => {
     return rateLimit({
         windowMs: config.node_env === 'test' ? 1000 : windowMs,
-        max: config.node_env === 'test' ? 1000 : windowMs,
+        max: config.node_env === 'test' ? 1000 : max,
         standardHeaders: true, 
         legacyHeaders: false,
         

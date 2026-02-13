@@ -3,12 +3,8 @@ interface ProposalInput {
     userId: string
 }
 
-interface ProposalId {
-    id: string
-}
-
 interface ProposalResponse {
     finalMarkdown: string,
     pricingJson: JSON 
 }
-export { ProposalInput, ProposalId, ProposalResponse }
+export { ProposalInput, ProposalResponse }

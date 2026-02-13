@@ -30,13 +30,13 @@ const createScope = async (req: Request<{}, {}, ScopeInput>, res: Response, next
     }
 }
 
-const getScopeById = async (req: Request<ScopeId>, res: Response, next: NextFunction) => {
+const getScopeById = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
     try {
         const scope = await prisma.scope.findUniqueOrThrow({
             where: {
-                id: id
+                id: id as string
             }
         })
 

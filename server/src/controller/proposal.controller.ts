@@ -30,13 +30,13 @@ const createProposal = async (req: Request<{}, {}, ProposalInput>, res: Response
     } 
 }
 
-const getProposalStatus = async (req: Request<ProposalId>, res: Response, next: NextFunction) => {
+const getProposalStatus = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
     try {
         const proposal = await prisma.proposal.findUniqueOrThrow({
             where: {
-                id: id
+                id: id as string
             }
         });
 
@@ -51,13 +51,13 @@ const getProposalStatus = async (req: Request<ProposalId>, res: Response, next: 
     }
 }
 
-const getProposalData = async (req: Request<ProposalId>, res: Response, next: NextFunction) => {
+const getProposalData = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
     try {
         const proposal = await prisma.proposal.findUniqueOrThrow({
             where: {
-                id: id
+                id: id as string
             },
         })
 

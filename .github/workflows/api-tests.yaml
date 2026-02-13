@@ -22,6 +22,7 @@ jobs:
       # Create .env file for Docker
       - name: Create .env file
         run: |
+          echo "NODE_ENV=test" >> .env
           echo "POSTGRES_USER=postgres" >> .env
           echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
           echo "POSTGRES_DB=proposalflow" >> .env

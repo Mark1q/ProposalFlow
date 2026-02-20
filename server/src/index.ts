@@ -7,7 +7,8 @@ import { config } from './config/env.variables';
 import { serverAdapter } from './routes/bullboard.route';
 import { authRouter } from './routes/auth.route';
 import cookieParser from 'cookie-parser';
-
+import { prisma } from './lib/prisma';
+import { redisClient } from './lib/redis';
 
 if (!config.dbUrl) {
     throw new Error("DATABASE_URL environment variable is missing.");
@@ -22,11 +23,21 @@ app.get('/', (req, res) => {
     res.status(200).json({status: `Connected to port ${config.port}`});
 })
 
-app.get('/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'healthy', 
-    timestamp: new Date().toISOString() 
-  });
+app.get('/health', async (req, res) => {
+  try {
+    const userCount = await prisma.user.count();
+    
+    return res.status(userCount > 0 ? 200 : 503).json({ 
+      status: userCount > 0 ? 'healthy' : 'not-ready',
+      userCount,
+      timestamp: new Date().toISOString() 
+    });
+  } catch (error) {
+    return res.status(503).json({
+      status: 'error',
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 app.use('/api/scope', scopeRouter);

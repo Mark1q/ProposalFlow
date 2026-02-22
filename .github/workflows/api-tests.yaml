@@ -30,6 +30,9 @@ jobs:
           echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}" >> .env
           echo "RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}" >> .env
           echo "PORT=3000" >> .env
+          echo "ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }}" >> .env
+          echo "REFRESH_TOKEN_SECRET=${{ secrets.REFRESH_TOKEN_SECRET }}" >> .env
+
 
       - name: Start containers
         run: docker compose up -d --build
@@ -37,10 +40,6 @@ jobs:
       - name: Wait for API to be ready
         run: |
           timeout 60s bash -c 'until curl --silent --fail --output /dev/null http://localhost:3000/health; do sleep 2; done'
-
-      - name: Setup Database (Force Reset & Migrate)
-        run: |
-          docker compose exec -T api npx prisma migrate reset --force
 
       - name: Install Newman
         run: npm install -g newman

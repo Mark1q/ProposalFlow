@@ -34,20 +34,17 @@ jobs:
       - name: Start containers
         run: docker compose up -d --build
 
+      - name: Wait for API to be ready
+        run: |
+          timeout 60s bash -c 'until curl --silent --fail --output /dev/null http://localhost:3000/health; do sleep 2; done'
+
       - name: Setup Database (Migrations + Seed)
         run: |
           docker compose exec -T api npx prisma migrate deploy
           docker compose exec -T api npx prisma db seed
 
-      - name: Wait for API to be ready
-        run: |
-          echo "Waiting for API to start..."
-          timeout 60s bash -c 'until curl --silent --output /dev/null http://localhost:3000; do sleep 2; done'
-          echo "API is up!"
-
       - name: Install Newman
         run: npm install -g newman
-
       
       - name: Run Postman Collection
         run: |

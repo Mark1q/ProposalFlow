@@ -25,18 +25,11 @@ app.get('/', (req, res) => {
 
 app.get('/health', async (req, res) => {
   try {
-    const userCount = await prisma.user.count();
-    
-    return res.status(userCount > 0 ? 200 : 503).json({ 
-      status: userCount > 0 ? 'healthy' : 'not-ready',
-      userCount,
-      timestamp: new Date().toISOString() 
-    });
+    // lightweight check to ensure the DB is reachable
+    await prisma.$queryRaw`SELECT 1`; 
+    return res.status(200).json({ status: 'up' });
   } catch (error) {
-    return res.status(503).json({
-      status: 'error',
-      timestamp: new Date().toISOString()
-    });
+    return res.status(503).json({ status: 'db-down' });
   }
 });
 

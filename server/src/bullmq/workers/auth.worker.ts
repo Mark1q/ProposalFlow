@@ -34,7 +34,7 @@ const registrationWorker = new Worker('welcome-flow', async (job: Job) => {
 
             {{MAGIC_LINK}}
 
-            This link expires in 10 minutes and can only be used once.
+            This link expires in 15 minutes and can only be used once.
 
             If you didn't request this email, you can safely ignore it.
 

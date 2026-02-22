@@ -38,10 +38,9 @@ jobs:
         run: |
           timeout 60s bash -c 'until curl --silent --fail --output /dev/null http://localhost:3000/health; do sleep 2; done'
 
-      - name: Setup Database (Migrations + Seed)
+      - name: Setup Database (Force Reset & Migrate)
         run: |
-          docker compose exec -T api npx prisma migrate deploy
-          docker compose exec -T api npx prisma db seed
+          docker compose exec -T api npx prisma migrate reset --force
 
       - name: Install Newman
         run: npm install -g newman

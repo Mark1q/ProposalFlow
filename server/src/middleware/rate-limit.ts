@@ -2,11 +2,19 @@ import { rateLimit } from 'express-rate-limit'
 import { RedisStore } from 'rate-limit-redis'
 import { redisClient } from '../lib/redis';
 import { config } from '../config/env.variables';
+import { NextFunction, Request, Response } from 'express';
 
 const createRateLimiter = (windowMs: number, max: number, prefix: string = 'rl') => {
+    // skip rate limiting when dealing with API testing
+    if (config.node_env.trim() === 'test') {
+        return (req: Request, res: Response, next: NextFunction) => {
+            next(); 
+        };
+    }
+
     return rateLimit({
-        windowMs: config.node_env === 'test' ? 1000 : windowMs,
-        max: config.node_env === 'test' ? 1000 : max,
+        windowMs,
+        max,
         standardHeaders: true, 
         legacyHeaders: false,
         

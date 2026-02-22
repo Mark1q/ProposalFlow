@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { ProposalId, ProposalInput } from "../interfaces/proposal.interface";
+import { ProposalInput } from "../interfaces/proposal.interface";
 import { prisma } from "../lib/prisma";
 import { Prisma } from "../generated/prisma/client";
 import { AppError } from "../utils/AppError";

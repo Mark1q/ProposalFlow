@@ -5,7 +5,6 @@
 
 **AI-powered proposal generator for freelance developers and agencies.** Answer 10–12 business-focused questions, get a professional, persuasive proposal in under 3 minutes.
 
----
 
 ## Who It's For
 
@@ -13,15 +12,12 @@
 - **Small agencies** that need consistent, high-quality proposals without the overhead
 - **Consultants** who want to move fast without sacrificing professionalism
 
----
 
 ## The Problem
 
 Most freelance proposals lose clients before they finish reading. They're full of tech specs, feature lists, and vague timelines — but say nothing about business outcomes, pricing rationale, or why *you* are the right person for the job.
 
 ProposalFlow fixes that.
-
----
 
 ## Why Not Just Use ChatGPT?
 
@@ -32,7 +28,6 @@ You could paste your project details into ChatGPT and ask for a proposal. You’
 - **Scope protection built in** — assumptions and exclusions are generated automatically, before the client even signs
 - **Repeatable and scalable** — every proposal follows a proven structure; no prompt engineering required
 
----
 
 ## What It Generates
 
@@ -47,7 +42,6 @@ You fill out a short scope wizard. ProposalFlow generates a complete, client-rea
 
 Proposals are returned as Markdown, making them easy to edit, copy into any tool, or render directly in the browser.
 
----
 
 ## How It Works
 
@@ -140,8 +134,6 @@ GET  /api/proposal/:id/status — poll for pending / processing / completed / fa
 GET  /api/proposal/:id        — fetch the completed proposal with finalMarkdown
 ```
 
----
-
 ## Scope Wizard Input
 
 ```json
@@ -155,7 +147,6 @@ GET  /api/proposal/:id        — fetch the completed proposal with finalMarkdow
 }
 ```
 
----
 
 ## Project Structure
 
@@ -196,7 +187,6 @@ The test pipeline runs automatically on pushes to `main`. It requires two reposi
 | `SERVER_ENV_TEST` | Full contents of `server/.env` for the test environment |
 | `GOOGLE_API_KEY` | Google AI Studio API key for the AI service |
 
----
 
 ## Environment Variables
 
@@ -219,13 +209,9 @@ See `.env.example`, `server/.env.example`, and `ai-service/.env.example` for all
 📄 PDF export coming soon  
 🎥 Demo video coming soon
 
----
-
 ## Contributing
 
 PRs and issues are welcome. If you're adding a feature, open an issue first so we can discuss the approach.
-
----
 
 ## License
 

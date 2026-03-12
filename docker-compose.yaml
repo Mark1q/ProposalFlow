@@ -17,7 +17,6 @@ x-worker-base: &worker-base
       - ./server:/app
       - server_node_modules:/app/node_modules
       - server_generated:/app/src/generated
-    command: sh -c "npm run worker"
 
 services:
   db:

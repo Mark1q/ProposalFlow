@@ -1,6 +1,5 @@
 interface ProposalInput {
-    scopeId: string,
-    userId: string
+    scopeId: string
 }
 
 interface ProposalResponse {

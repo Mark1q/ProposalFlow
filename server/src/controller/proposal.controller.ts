@@ -6,13 +6,14 @@ import { AppError } from "../utils/AppError";
 import { proposalGenerationQueue } from "../bullmq/queues/proposal.queue";
 
 const createProposal = async (req: Request<{}, {}, ProposalInput>, res: Response, next: NextFunction) => {
-    const { scopeId, userId } = req.body;
+    const { scopeId } = req.body
+    const userId  = req.user!.id
 
     try {
         const proposal = await prisma.proposal.create({
             data: {
                 scopeId: scopeId,
-                userId: userId
+                userId: userId 
             }
         });
 

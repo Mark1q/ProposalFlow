@@ -1,5 +1,3 @@
-import { JWTPayload } from "jose";
-
 type Roles = 'admin' | 'user' | 'guest';
 
 interface RegisterInput {

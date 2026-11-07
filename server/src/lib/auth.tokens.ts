@@ -1,5 +1,6 @@
 import * as jose from 'jose'
-import { config } from '../config/env.variables';
+import { randomUUID } from 'node:crypto';
+import { config } from '../config/env.variables.js';
 
 const ACCESS_SECRET = new TextEncoder().encode(config.jwt.accessSecret);
 const REFRESH_SECRET = new TextEncoder().encode(config.jwt.refreshSecret);
@@ -15,6 +16,7 @@ const signAccessToken = async (userId: string) => {
 const signRefreshToken = async (userId: string) => {
     return new jose.SignJWT({sub: userId})
     .setProtectedHeader({ alg: 'HS256' })
+    .setJti(randomUUID())
     .setIssuedAt()
     .setExpirationTime(config.jwt.refreshExpiration)
     .sign(REFRESH_SECRET);

@@ -1,12 +1,13 @@
 import { NextFunction, Request, Response } from "express"
-import { LoginInput, RefreshGenerateToken, RegisterInput } from "../interfaces/auth.interface"
-import { prisma } from "../lib/prisma"
-import { registerUserQueue } from "../bullmq/queues/auth.queue";
-import { AppError } from "../utils/AppError";
-import { Prisma } from "../generated/prisma/client";
+import { createHash } from "crypto"
+import { LoginInput, RefreshGenerateToken, RegisterInput } from "../interfaces/auth.interface.js"
+import { prisma } from "../lib/prisma.js"
+import { registerUserQueue } from "../bullmq/queues/auth.queue.js";
+import { AppError } from "../utils/AppError.js";
+import { Prisma } from "../generated/prisma/client.js";
 import * as bcrypt from "bcryptjs"
-import { signAccessToken, signRefreshToken, verifyToken } from "../lib/auth.tokens";
-import { DUMMY_HASH } from "../constants";
+import { signAccessToken, signRefreshToken, verifyToken } from "../lib/auth.tokens.js";
+import { DUMMY_HASH } from "../constants.js";
 
 declare global {
   namespace Express {
@@ -15,6 +16,10 @@ declare global {
     }
   }
 }
+
+const hashToken = (token: string): string => {
+    return createHash("sha256").update(token).digest("hex");
+};
 
 const registerUser = async (req: Request<{}, {}, RegisterInput>, res: Response, next: NextFunction) => {
     const { firstName, lastName, password, email } = req.body;
@@ -33,6 +38,17 @@ const registerUser = async (req: Request<{}, {}, RegisterInput>, res: Response, 
 
         const accessToken = await signAccessToken(user.id);
         const refreshToken = await signRefreshToken(user.id);
+
+        const tokenHash = hashToken(refreshToken);
+        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+        await prisma.refreshToken.create({
+            data: {
+                tokenHash,
+                userId: user.id,
+                expiresAt
+            }
+        });
 
         res.cookie('refreshToken', refreshToken, {
             maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
@@ -85,6 +101,17 @@ const loginUser = async (req: Request<{}, {}, LoginInput>, res: Response, next: 
         const accessToken = await signAccessToken(user.id);
         const refreshToken = await signRefreshToken(user.id);
 
+        const tokenHash = hashToken(refreshToken);
+        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+        await prisma.refreshToken.create({
+            data: {
+                tokenHash,
+                userId: user.id,
+                expiresAt
+            }
+        });
+
         res.cookie('refreshToken', refreshToken, {
             maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
             httpOnly: true,
@@ -112,6 +139,19 @@ const loginUser = async (req: Request<{}, {}, LoginInput>, res: Response, next: 
 }
 
 const logoutUser = async (req: Request, res: Response, next: NextFunction) => {
+    const token = req.cookies.refreshToken;
+
+    if (token) {
+        try {
+            const tokenHash = hashToken(token);
+            await prisma.refreshToken.deleteMany({
+                where: { tokenHash }
+            });
+        } catch (error) {
+            // Ignore DB errors on logout
+        }
+    }
+
     res.clearCookie("accessToken", {
         httpOnly: true,
         sameSite: 'strict',
@@ -139,11 +179,59 @@ const refreshAccessToken = async (req: Request, res: Response, next: NextFunctio
     try {
         const jwtPayload = await verifyToken(token, 'refresh');
 
-        if (!jwtPayload) { 
+        if (!jwtPayload || !jwtPayload.sub) { 
+            res.clearCookie("accessToken", { httpOnly: true, sameSite: 'strict' });
+            res.clearCookie("refreshToken", { path: '/api/auth/refresh', httpOnly: true, sameSite: 'strict' });
             return next(new AppError("Invalid or expired refresh token", 401)); 
         }
-        
-        const accessToken = await signAccessToken(jwtPayload.sub as string);
+
+        const userId = jwtPayload.sub as string;
+        const incomingTokenHash = hashToken(token);
+
+        const tokenRecord = await prisma.refreshToken.findUnique({
+            where: { tokenHash: incomingTokenHash }
+        });
+
+        if (!tokenRecord) {
+            await prisma.refreshToken.deleteMany({
+                where: { userId }
+            });
+
+            res.clearCookie("accessToken", { httpOnly: true, sameSite: 'strict' });
+            res.clearCookie("refreshToken", { path: '/api/auth/refresh', httpOnly: true, sameSite: 'strict' });
+
+            return next(new AppError("Invalid or reused refresh token", 401));
+        }
+
+        const accessToken = await signAccessToken(userId);
+        const newRefreshToken = await signRefreshToken(userId);
+        const newTokenHash = hashToken(newRefreshToken);
+        const newExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+        try {
+            await prisma.$transaction([
+                prisma.refreshToken.delete({ where: { id: tokenRecord.id } }),
+                prisma.refreshToken.create({
+                    data: {
+                        tokenHash: newTokenHash,
+                        userId,
+                        expiresAt: newExpiresAt
+                    }
+                })
+            ]);
+        } catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+                return next(new AppError("Token already used, please retry", 401));
+            }
+            throw error;
+        }
+
+        res.cookie('refreshToken', newRefreshToken, {
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
+            httpOnly: true,
+            sameSite: 'strict',
+            path: '/api/auth/refresh'
+        });
 
         res.cookie('accessToken', accessToken, {
             maxAge: 15 * 60 * 1000, 
@@ -157,6 +245,9 @@ const refreshAccessToken = async (req: Request, res: Response, next: NextFunctio
         });
 
     } catch (error) {
+        if (error instanceof AppError) {
+            return next(error);
+        }
         return next(new AppError('Internal server error', 500));
     }
 }

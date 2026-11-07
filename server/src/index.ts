@@ -1,14 +1,14 @@
 import express from 'express'
 import cors from 'cors'
-import { scopeRouter } from './routes/scope.route';
-import { proposalRouter } from './routes/proposal.route';
-import { errorHandling } from './middleware/error.middleware';
-import { config } from './config/env.variables';
-import { serverAdapter } from './routes/bullboard.route';
-import { authRouter } from './routes/auth.route';
+import helmet from 'helmet' 
+import { scopeRouter } from './routes/scope.route.js';
+import { proposalRouter } from './routes/proposal.route.js';
+import { errorHandling } from './middleware/error.middleware.js';
+import { config } from './config/env.variables.js';
+import { serverAdapter } from './routes/bullboard.route.js';
+import { authRouter } from './routes/auth.route.js';
 import cookieParser from 'cookie-parser';
-import { prisma } from './lib/prisma';
-import { redisClient } from './lib/redis';
+import { prisma } from './lib/prisma.js';
 
 if (!config.dbUrl) {
     throw new Error("DATABASE_URL environment variable is missing.");
@@ -17,6 +17,7 @@ if (!config.dbUrl) {
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(helmet());
 app.use(cookieParser());
 
 app.get('/', (req, res) => {

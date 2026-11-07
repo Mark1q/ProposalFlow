@@ -1,5 +1,5 @@
-import { config } from "../config/env.variables";
-import Redis from "ioredis";
+import { config } from "../config/env.variables.js";
+import { Redis} from "ioredis";
 
 export const redisClient = new Redis({
   host: config.redis.host,

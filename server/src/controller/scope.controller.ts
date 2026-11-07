@@ -36,7 +36,8 @@ const getScopeById = async (req: Request, res: Response, next: NextFunction) => 
     try {
         const scope = await prisma.scope.findUniqueOrThrow({
             where: {
-                id: id as string
+                id: id as string,
+                userId: req.user!.id
             }
         })
 

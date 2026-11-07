@@ -10,6 +10,14 @@ const createProposal = async (req: Request<{}, {}, ProposalInput>, res: Response
     const userId  = req.user!.id
 
     try {
+        const scope = await prisma.scope.findFirst({
+            where: { id: scopeId, userId }
+        });
+
+        if (!scope) {
+            return next(new AppError("Scope not found", 404));
+        }
+
         const proposal = await prisma.proposal.create({
             data: {
                 scopeId: scopeId,
@@ -37,7 +45,8 @@ const getProposalStatus = async (req: Request, res: Response, next: NextFunction
     try {
         const proposal = await prisma.proposal.findUniqueOrThrow({
             where: {
-                id: id as string
+                id: id as string,
+                userId: req.user!.id
             }
         });
 
@@ -57,7 +66,8 @@ const getProposalData = async (req: Request, res: Response, next: NextFunction) 
     try {
         const proposal = await prisma.proposal.findUniqueOrThrow({
             where: {
-                id: id as string
+                id: id as string,
+                userId: req.user!.id
             },
         })
 

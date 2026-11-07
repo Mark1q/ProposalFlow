@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { ProposalInput } from "../interfaces/proposal.interface";
-import { prisma } from "../lib/prisma";
-import { Prisma } from "../generated/prisma/client";
-import { AppError } from "../utils/AppError";
-import { proposalGenerationQueue } from "../bullmq/queues/proposal.queue";
+import { ProposalInput } from "../interfaces/proposal.interface.js";
+import { prisma } from "../lib/prisma.js";
+import { Prisma } from "../generated/prisma/client.js";
+import { AppError } from "../utils/AppError.js";
+import { proposalGenerationQueue } from "../bullmq/queues/proposal.queue.js";
 
 const createProposal = async (req: Request<{}, {}, ProposalInput>, res: Response, next: NextFunction) => {
     const { scopeId } = req.body
@@ -27,7 +27,7 @@ const createProposal = async (req: Request<{}, {}, ProposalInput>, res: Response
             return next(new AppError("Invalid ID found", 404));
         }
 
-        return next(new AppError(error instanceof Error ? error.message : "Internal server error", 500));
+        return next(error);
     } 
 }
 
@@ -47,8 +47,7 @@ const getProposalStatus = async (req: Request, res: Response, next: NextFunction
             return next(new AppError("Proposal not found", 404));
         }
 
-        const msg = error instanceof Error ? error.message : "Unexpected error";
-        return next(new AppError(msg, 500));
+        return next(error);
     }
 }
 
@@ -69,8 +68,7 @@ const getProposalData = async (req: Request, res: Response, next: NextFunction) 
             return next(new AppError("Proposal not found", 404));
         }
 
-        const msg = error instanceof Error ? error.message : "Unexpected error";
-        return next(new AppError(msg, 500));
+        return next(error);
     }
 }
 export { createProposal, getProposalStatus, getProposalData }

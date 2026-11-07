@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { ScopeId, ScopeInput } from "../interfaces/scope.interface";
-import { prisma } from "../lib/prisma";
-import { AppError } from "../utils/AppError";
-import { Prisma } from "../generated/prisma/client";
+import { ScopeId, ScopeInput } from "../interfaces/scope.interface.js";
+import { prisma } from "../lib/prisma.js";
+import { AppError } from "../utils/AppError.js";
+import { Prisma } from "../generated/prisma/client.js";
 
 const createScope = async (req: Request<{}, {}, ScopeInput>, res: Response, next: NextFunction) => {
     const scopeJson = req.body;
@@ -26,7 +26,7 @@ const createScope = async (req: Request<{}, {}, ScopeInput>, res: Response, next
             return next(new AppError(`UserId not found`, 404));
         }
         
-        return next(new AppError(error instanceof Error ? error.message : "Internal server error", 500));
+        return next(error);
     }
 }
 
@@ -48,8 +48,7 @@ const getScopeById = async (req: Request, res: Response, next: NextFunction) => 
             }
         }
 
-        const msg = error instanceof Error ? error.message : "Unexpected error";
-        return next(new AppError(msg, 500));
+        return next(error);
     }
 }
 

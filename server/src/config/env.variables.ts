@@ -16,5 +16,8 @@ export const config = {
     },
     pythonServiceUrl: process.env.PYTHON_SERVICE_URL,
     emailApiKey: process.env.RESEND_API_KEY,
-    node_env: process.env.NODE_ENV || 'dev'
+    node_env: process.env.NODE_ENV || 'dev',
+    corsOrigins: (process.env.CORS_ORIGINS || 'http://localhost:3001')
+    .split(',')
+    .map(o => o.trim()),
 };

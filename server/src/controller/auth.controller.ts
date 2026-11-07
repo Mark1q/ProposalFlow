@@ -8,6 +8,7 @@ import { Prisma } from "../generated/prisma/client.js";
 import * as bcrypt from "bcryptjs"
 import { signAccessToken, signRefreshToken, verifyToken } from "../lib/auth.tokens.js";
 import { DUMMY_HASH } from "../constants.js";
+import { config } from "../config/env.variables.js"
 
 declare global {
   namespace Express {
@@ -115,6 +116,7 @@ const loginUser = async (req: Request<{}, {}, LoginInput>, res: Response, next: 
         res.cookie('refreshToken', refreshToken, {
             maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
             httpOnly: true,
+            secure: config.node_env === 'production',
             sameSite: 'strict',
             path: '/api/auth/refresh'
         })
@@ -122,6 +124,7 @@ const loginUser = async (req: Request<{}, {}, LoginInput>, res: Response, next: 
         res.cookie('accessToken', accessToken, {
             maxAge: 15 * 60 * 1000, // 15 minutes
             httpOnly: true,
+            secure: config.node_env === 'production',
             sameSite: 'strict'
         });
 
@@ -155,11 +158,13 @@ const logoutUser = async (req: Request, res: Response, next: NextFunction) => {
     res.clearCookie("accessToken", {
         httpOnly: true,
         sameSite: 'strict',
+        secure: config.node_env === 'production'
     });
     
     res.clearCookie("refreshToken", {
         path: '/api/auth/refresh', 
         httpOnly: true,
+        secure: config.node_env === 'production',
         sameSite: 'strict',
     });
 
@@ -230,12 +235,14 @@ const refreshAccessToken = async (req: Request, res: Response, next: NextFunctio
             maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
             httpOnly: true,
             sameSite: 'strict',
+            secure: config.node_env === 'production',
             path: '/api/auth/refresh'
         });
 
         res.cookie('accessToken', accessToken, {
             maxAge: 15 * 60 * 1000, 
             httpOnly: true,
+            secure: config.node_env === 'production',
             sameSite: 'strict'
         });
 

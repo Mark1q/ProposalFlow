@@ -16,7 +16,12 @@ if (!config.dbUrl) {
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: config.corsOrigins,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type'],
+}));
 app.use(helmet());
 app.use(cookieParser());
 
@@ -36,7 +41,7 @@ app.get('/health', async (req, res) => {
 
 app.use('/api/scope', scopeRouter);
 app.use('/api/proposal', proposalRouter);
-app.use('/admin/queues', serverAdapter.getRouter());
+app.use('/admin/queues', serverAdapter.getRouter()); // TODO: Add authorization to BullMQ Dashboard
 app.use('/api/auth', authRouter);
 
 app.use(errorHandling);

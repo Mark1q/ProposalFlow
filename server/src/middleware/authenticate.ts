@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { AppError } from "../utils/AppError";
-import { verifyToken } from "../lib/auth.tokens";
+import { AppError } from "../utils/AppError.js";
+import { verifyToken } from "../lib/auth.tokens.js";
 
 const authenticate = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.accessToken;
@@ -21,8 +21,16 @@ const authenticate = async (req: Request, res: Response, next: NextFunction) => 
         };
         
         next();
-    } catch (error) {
-        return next(new AppError("Internal server error", 500));
+    } catch (error: any) {
+        if (error.name === "TokenExpiredError") {
+            return next(new AppError("Token has expired. Please log in again.", 401));
+        }
+
+        if (error.name === "JsonWebTokenError") {
+            return next(new AppError("Invalid token signature.", 401));
+        }
+        
+        return next(error);
     }
 }
 

@@ -1,3 +1,4 @@
 - Swagger JSDOC for documentation
 - Redis Langcache for LLM caching
 - Move interfaces and types to their respective folder ( refactor later )
+- Add refresh token rotation (done)

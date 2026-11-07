@@ -10,7 +10,7 @@ const proposalRouter = express.Router();
 // TODO: add authenticate middleware to GET endpoints
 
 proposalRouter.post('/start', proposalLimiter, authenticate, validate(createProposalSchema), createProposal);
-proposalRouter.get('/:id/status', generalLimiter, getProposalStatus);
-proposalRouter.get('/:id', generalLimiter, getProposalData);
+proposalRouter.get('/:id/status', generalLimiter, authenticate, getProposalStatus);
+proposalRouter.get('/:id', generalLimiter, authenticate, getProposalData);
 
 export { proposalRouter }

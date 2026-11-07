@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { AppError } from "../utils/AppError";
+import { AppError } from "../utils/AppError.js";
 
 const errorHandling = (err: unknown, req: Request, res: Response, next: NextFunction) => {
 
@@ -13,7 +13,7 @@ const errorHandling = (err: unknown, req: Request, res: Response, next: NextFunc
         return res.status(err.status).send({ status: err.status, message: err.message });
     }
 
-    console.error("Unhandled error:", err);
+    console.error("Unhandled error: ", err);
     
     return res.status(500).json({error: "Internal server error"});
 }

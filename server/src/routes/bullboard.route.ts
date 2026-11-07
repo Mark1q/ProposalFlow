@@ -1,7 +1,7 @@
 import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { ExpressAdapter } from '@bull-board/express';
-import { proposalGenerationQueue } from '../bullmq/queues/proposal.queue';
+import { proposalGenerationQueue } from '../bullmq/queues/proposal.queue.js';
 
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath('/admin/queues');

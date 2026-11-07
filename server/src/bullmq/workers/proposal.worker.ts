@@ -1,7 +1,7 @@
 import { Job, Worker } from "bullmq";
-import { config } from "../../config/env.variables";
-import { prisma } from "../../lib/prisma";
-import { generateProposalDetails } from "../../controller/api.controller";
+import { config } from "../../config/env.variables.js";
+import { prisma } from "../../lib/prisma.js";
+import { generateProposalDetails } from "../../controller/api.controller.js";
 
 const proposalGenerationWorker = new Worker('proposal-processing', async (job: Job) => {
     console.log(`Processing job ${job.id} of type ${job.name}`);

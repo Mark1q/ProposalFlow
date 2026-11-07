@@ -1,7 +1,7 @@
 import { Job, Worker } from "bullmq";
 import { Resend } from "resend";
-import { config } from "../../config/env.variables";
-import { prisma } from "../../lib/prisma";
+import { config } from "../../config/env.variables.js";
+import { prisma } from "../../lib/prisma.js";
 
 const registrationWorker = new Worker('welcome-flow', async (job: Job) => {
     console.log(`Processing job ${job.id} of type ${job.name}`);

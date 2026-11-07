@@ -1,5 +1,5 @@
 import Joi from "joi"
-import { ScopeInput } from "../interfaces/scope.interface"
+import { ScopeInput } from "../interfaces/scope.interface.js"
 import { NextFunction, Request, Response } from "express";
 
 const validate = (schema: Joi.ObjectSchema<ScopeInput>) => {

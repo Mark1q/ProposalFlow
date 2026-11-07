@@ -1,7 +1,7 @@
 import { rateLimit } from 'express-rate-limit'
 import { RedisStore } from 'rate-limit-redis'
-import { redisClient } from '../lib/redis';
-import { config } from '../config/env.variables';
+import { redisClient } from '../lib/redis.js';
+import { config } from '../config/env.variables.js';
 import { NextFunction, Request, Response } from 'express';
 
 const createRateLimiter = (windowMs: number, max: number, prefix: string = 'rl') => {
@@ -19,8 +19,9 @@ const createRateLimiter = (windowMs: number, max: number, prefix: string = 'rl')
         legacyHeaders: false,
         
         store: new RedisStore({
-            // @ts-expect-error - ioredis and rate-limit-redis types sometimes clash
-            sendCommand: (...args: string[]) => redisClient.call(...args),
+            sendCommand: async (...args: string[]) => {
+                return (await redisClient.call(args[0], ...args.slice(1))) as any;
+            },
             prefix: `${prefix}:`,
         }),
         

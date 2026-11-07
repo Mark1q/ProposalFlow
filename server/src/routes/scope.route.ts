@@ -1,9 +1,9 @@
 import express from 'express'
-import { createScope, getScopeById } from '../controller/scope.controller';
-import { validate } from '../middleware/validate.schema';
-import { createScopeSchema } from '../validations/scope.validation';
-import { authenticate } from '../middleware/authenticate';
-import { generalLimiter, scopeLimiter } from '../middleware/rate-limit';
+import { createScope, getScopeById } from '../controller/scope.controller.js';
+import { validate } from '../middleware/validate.schema.js';
+import { createScopeSchema } from '../validations/scope.validation.js';
+import { authenticate } from '../middleware/authenticate.js';
+import { generalLimiter, scopeLimiter } from '../middleware/rate-limit.js';
 
 const scopeRouter = express.Router()
 

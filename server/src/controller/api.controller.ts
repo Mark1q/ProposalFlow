@@ -1,6 +1,6 @@
 import { JsonValue } from "@prisma/client/runtime/client";
-import { ProposalResponse } from "../interfaces/proposal.interface";
-import { config } from "../config/env.variables";
+import { ProposalResponse } from "../interfaces/proposal.interface.js";
+import { config } from "../config/env.variables.js";
 
 export const generateProposalDetails = async (scopeJson: JsonValue): Promise<ProposalResponse> => {
     const response = await fetch(config.pythonServiceUrl || 'http://localhost:8000/generate', {

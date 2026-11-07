@@ -1,9 +1,9 @@
 import express from "express";
-import { validate } from "../middleware/validate.schema";
-import { createProposalSchema } from "../validations/proposal.validation";
-import { createProposal, getProposalStatus, getProposalData } from "../controller/proposal.controller";
-import { authenticate } from "../middleware/authenticate";
-import { generalLimiter, proposalLimiter } from "../middleware/rate-limit";
+import { validate } from "../middleware/validate.schema.js";
+import { createProposalSchema } from "../validations/proposal.validation.js";
+import { createProposal, getProposalStatus, getProposalData } from "../controller/proposal.controller.js";
+import { authenticate } from "../middleware/authenticate.js";
+import { generalLimiter, proposalLimiter } from "../middleware/rate-limit.js";
 
 const proposalRouter = express.Router();
 

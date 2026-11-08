@@ -18,3 +18,5 @@ const authorize = (...allowed: Role[]) => {
         next();
     };
 };
+
+export { authorize }

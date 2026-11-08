@@ -9,6 +9,7 @@ import { serverAdapter } from './routes/bullboard.route.js';
 import { authRouter } from './routes/auth.route.js';
 import cookieParser from 'cookie-parser';
 import { prisma } from './lib/prisma.js';
+import { authorize } from './middleware/authorize.js';
 
 if (!config.dbUrl) {
     throw new Error("DATABASE_URL environment variable is missing.");
@@ -41,7 +42,7 @@ app.get('/health', async (req, res) => {
 
 app.use('/api/scope', scopeRouter);
 app.use('/api/proposal', proposalRouter);
-app.use('/admin/queues', serverAdapter.getRouter()); // TODO: Add authorization to BullMQ Dashboard
+app.use('/admin/queues', authorize('ADMIN'), serverAdapter.getRouter()); 
 app.use('/api/auth', authRouter);
 
 app.use(errorHandling);

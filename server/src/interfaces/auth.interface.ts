@@ -1,12 +1,3 @@
-type Roles = 'admin' | 'user' | 'guest';
-
-interface RegisterInput {
-    email: string
-    password: string
-    firstName?: string,
-    lastName?: string
-}
-
 interface LoginInput {
     email: string,
     password: string,
@@ -16,4 +7,4 @@ interface RefreshGenerateToken {
     token: string
 }
 
-export { Roles, RegisterInput, LoginInput, RefreshGenerateToken }
+export { LoginInput, RefreshGenerateToken }

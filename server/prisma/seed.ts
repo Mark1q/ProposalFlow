@@ -1,9 +1,9 @@
-import { prisma } from "../src/lib/prisma";
+import { prisma } from "../src/lib/prisma.js";
 import { faker } from "@faker-js/faker";
 import * as bcrypt from "bcryptjs"
-import { RegisterInput } from "../src/interfaces/auth.interface";
+import { Prisma } from "../src/generated/prisma/client.js";
 
-const generateUsers = async (): Promise<RegisterInput[]> => {
+const generateUsers = async (): Promise<Prisma.UserCreateManyInput[]> => {
   const hashedPassword = await bcrypt.hash('password123', 10);
 
   const users = Array.from({ length: 10 }).map(() => ({
@@ -13,11 +13,19 @@ const generateUsers = async (): Promise<RegisterInput[]> => {
     password: hashedPassword
   }));
 
-  return [...users, {
-    // Test user to use during testing for login
+  return [...users,
+  {
+    // Test user for login tests
     email: "test@example.com",
     password: hashedPassword
-  }];
+  },
+  {
+    // Admin for /admin/queues
+    email: "admin@example.com",
+    password: hashedPassword,
+    role: "ADMIN" as const
+  }
+];
 }
 
 const generateScopes = async () => {

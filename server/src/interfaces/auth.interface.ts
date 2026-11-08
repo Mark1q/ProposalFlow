@@ -1,3 +1,10 @@
+interface RegisterInput {
+    email: string
+    password: string
+    firstName?: string,
+    lastName?: string
+}
+
 interface LoginInput {
     email: string,
     password: string,
@@ -7,4 +14,4 @@ interface RefreshGenerateToken {
     token: string
 }
 
-export { LoginInput, RefreshGenerateToken }
+export { RegisterInput, LoginInput, RefreshGenerateToken }

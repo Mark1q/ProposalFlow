@@ -912,6 +912,50 @@
           "name": "auth-setup",
           "item": [
             {
+              "name": "GET scope without cookie returns 401",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 401 without cookie\", function() {",
+                      "    pm.response.to.have.status(401);",
+                      "});",
+                      "",
+                      "pm.test(\"Returns not logged in error\", function() {",
+                      "    const jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.message).to.include(\"not logged in\");",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Cookie",
+                    "value": "",
+                    "disabled": true
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}api/scope/00000000-0000-0000-0000-000000000000",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "scope",
+                    "00000000-0000-0000-0000-000000000000"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
               "name": "Not Logged In",
               "event": [
                 {
@@ -1363,6 +1407,95 @@
               "response": []
             },
             {
+              "name": "GET proposal status without cookie returns 401",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 401 without cookie\", function() {",
+                      "    pm.response.to.have.status(401);",
+                      "});",
+                      "",
+                      "pm.test(\"Returns not logged in error\", function() {",
+                      "    const jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.message).to.include(\"not logged in\");",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Cookie",
+                    "value": "",
+                    "disabled": true
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}api/proposal/00000000-0000-0000-0000-000000000000/status",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "proposal",
+                    "00000000-0000-0000-0000-000000000000",
+                    "status"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "GET proposal without cookie returns 401",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 401 without cookie\", function() {",
+                      "    pm.response.to.have.status(401);",
+                      "});",
+                      "",
+                      "pm.test(\"Returns not logged in error\", function() {",
+                      "    const jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.message).to.include(\"not logged in\");",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Cookie",
+                    "value": "",
+                    "disabled": true
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}api/proposal/00000000-0000-0000-0000-000000000000",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "proposal",
+                    "00000000-0000-0000-0000-000000000000"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
               "name": "Not Logged In",
               "event": [
                 {
@@ -1389,7 +1522,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"scopeId\": \"{{scope_id}}\",\r\n    \"userId\": \"{{user_id}}\"\r\n}",
+                  "raw": "{\"scopeId\": \"{{scope_id}}\"}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1506,7 +1639,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"scopeId\": \"{{scope_id}}\",\r\n    \"userId\": \"{{user_id}}\"\r\n}",
+                  "raw": "{\"scopeId\": \"{{scope_id}}\"}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1533,13 +1666,13 @@
                   "listen": "test",
                   "script": {
                     "exec": [
-                      "pm.test(\"Status code is 404\", function() {\r",
-                      "    pm.response.to.have.status(404);\r",
-                      "});\r",
-                      "\r",
-                      "pm.test(\"Invalid ID error message\", function() {\r",
-                      "    const jsonData = pm.response.json();\r",
-                      "    pm.expect(jsonData.message).to.include(\"Invalid ID\");\r",
+                      "pm.test(\"Status code is 404\", function() {",
+                      "    pm.response.to.have.status(404);",
+                      "});",
+                      "",
+                      "pm.test(\"Scope not found error message\", function() {",
+                      "    const jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.message).to.include(\"not found\");",
                       "});"
                     ],
                     "type": "text/javascript",
@@ -1553,7 +1686,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"scopeId\": \"123\",\r\n    \"userId\": \"234\"\r\n}",
+                  "raw": "{\"scopeId\": \"123\"}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1600,7 +1733,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"scopeId\": \"123\"\r\n}",
+                  "raw": "{}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -1807,6 +1940,680 @@
           ]
         }
       ]
+    },
+    {
+      "name": "ownership",
+      "item": [
+        {
+          "name": "user-a-setup",
+          "item": [
+            {
+              "name": "Login as User A",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function() {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test(\"Access token cookie set\", function() {",
+                      "    pm.expect(pm.cookies.has(\"accessToken\")).to.be.true;",
+                      "});",
+                      "pm.collectionVariables.set(\"user_a_token\", pm.cookies.get(\"accessToken\"));"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"email\": \"test@example.com\", \"password\": \"password123\"}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/auth/login",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Scope (User A)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function() {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test(\"Saves scope_id for User A\", function() {",
+                      "    const jsonData = pm.response.json();",
+                      "    pm.expect(jsonData).to.have.property(\"scope_id\");",
+                      "    pm.collectionVariables.set(\"user_a_scope_id\", jsonData.scope_id);",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"projectName\": \"Project A\", \"businessGoal\": \"Increase customer satisfaction\", \"features\": [\"Feature 1\", \"Feature 2\", \"Feature 3\"], \"techStack\": [\"React\", \"Node.js\", \"MongoDB\"], \"budget\": \"100000\", \"timeline\": \"6 months\"}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/scope",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "scope"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Start Proposal (User A)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function() {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test(\"Saves proposal_id for User A\", function() {",
+                      "    const jsonData = pm.response.json();",
+                      "    pm.expect(jsonData).to.have.property(\"proposalId\");",
+                      "    pm.collectionVariables.set(\"user_a_proposal_id\", jsonData.proposalId);",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"scopeId\": \"{{user_a_scope_id}}\"}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/proposal/start",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "proposal",
+                    "start"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "user-b-setup",
+          "item": [
+            {
+              "name": "Register User B",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 201\", function() {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "pm.test(\"Access token cookie set\", function() {",
+                      "    pm.expect(pm.cookies.has(\"accessToken\")).to.be.true;",
+                      "});",
+                      "const newCookie = pm.cookies.get(\"accessToken\");",
+                      "const oldCookie = pm.collectionVariables.get(\"user_a_token\");",
+                      "pm.test(\"Cookie actually changed\", function() {",
+                      "    pm.expect(newCookie).to.not.equal(oldCookie);",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"email\": \"user_b_{{}}@example.com\", \"password\": \"password123\", \"firstName\": \"User\", \"lastName\": \"B\"}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/auth/register",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "user-b-isolation",
+          "item": [
+            {
+              "name": "User B: GET scope owned by A returns 404",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 404\", function() {",
+                      "    pm.response.to.have.status(404);",
+                      "});",
+                      "pm.test(\"Scope not found error\", function() {",
+                      "    const jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.message).to.include(\"not found\");",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}api/scope/{{user_a_scope_id}}",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "scope",
+                    "{{user_a_scope_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User B: GET proposal status owned by A returns 404",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 404\", function() {",
+                      "    pm.response.to.have.status(404);",
+                      "});",
+                      "pm.test(\"Proposal not found error\", function() {",
+                      "    const jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.message).to.include(\"not found\");",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}api/proposal/{{user_a_proposal_id}}/status",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "proposal",
+                    "{{user_a_proposal_id}}",
+                    "status"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User B: GET proposal owned by A returns 404",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 404\", function() {",
+                      "    pm.response.to.have.status(404);",
+                      "});",
+                      "pm.test(\"Proposal not found error\", function() {",
+                      "    const jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.message).to.include(\"not found\");",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}api/proposal/{{user_a_proposal_id}}",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "proposal",
+                    "{{user_a_proposal_id}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User B: POST start with A's scopeId returns 404",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 404\", function() {",
+                      "    pm.response.to.have.status(404);",
+                      "});",
+                      "pm.test(\"Scope not found error\", function() {",
+                      "    const jsonData = pm.response.json();",
+                      "    pm.expect(jsonData.message).to.include(\"not found\");",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"scopeId\": \"{{user_a_scope_id}}\"}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/proposal/start",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "proposal",
+                    "start"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User B: Create own scope for userId-ignore test",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", function() {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.collectionVariables.set(\"user_b_scope_id_tmp\", pm.response.json().scope_id);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"projectName\": \"Project A\", \"businessGoal\": \"Increase customer satisfaction\", \"features\": [\"Feature 1\", \"Feature 2\", \"Feature 3\"], \"techStack\": [\"React\", \"Node.js\", \"MongoDB\"], \"budget\": \"100000\", \"timeline\": \"6 months\"}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}api/scope",
+                  "host": [
+                    "{{base_url}}api"
+                  ],
+                  "path": [
+                    "scope"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "admin-queues",
+      "item": [
+        {
+          "name": "Logout (clear session)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}api/auth/logout",
+              "host": [
+                "{{base_url}}api"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "No Cookie returns 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 401 with no cookie\", function() {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "pm.test(\"Returns error message\", function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property(\"message\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}admin/queues",
+              "host": [
+                "{{base_url}}admin"
+              ],
+              "path": [
+                "queues"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login as normal user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Access token cookie set\", function() {",
+                  "    pm.expect(pm.cookies.has(\"accessToken\")).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\": \"test@example.com\", \"password\": \"password123\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}api/auth/login",
+              "host": [
+                "{{base_url}}api"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Normal user returns 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 403 for non-admin\", function() {",
+                  "    pm.response.to.have.status(403);",
+                  "});",
+                  "pm.test(\"Forbidden error message\", function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.message).to.include(\"Forbidden\");",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}admin/queues",
+              "host": [
+                "{{base_url}}admin"
+              ],
+              "path": [
+                "queues"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout normal user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}api/auth/logout",
+              "host": [
+                "{{base_url}}api"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login as admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Access token cookie set\", function() {",
+                  "    pm.expect(pm.cookies.has(\"accessToken\")).to.be.true;",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\": \"admin@example.com\", \"password\": \"password123\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}api/auth/login",
+              "host": [
+                "{{base_url}}api"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin gets 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 for admin\", function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}admin/queues",
+              "host": [
+                "{{base_url}}admin"
+              ],
+              "path": [
+                "queues"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "variable": [
@@ -1816,6 +2623,26 @@
     },
     {
       "key": "token_flow_email",
+      "value": ""
+    },
+    {
+      "key": "user_b_email",
+      "value": ""
+    },
+    {
+      "key": "user_a_scope_id",
+      "value": ""
+    },
+    {
+      "key": "user_a_proposal_id",
+      "value": ""
+    },
+    {
+      "key": "user_b_scope_id_tmp",
+      "value": ""
+    },
+    {
+      "key": "user_b_proposal_id_tmp",
       "value": ""
     }
   ]

@@ -9,7 +9,7 @@
     "dev": "nodemon --exec tsx src/index.ts",
     "worker:proposal": "nodemon --exec tsx src/bullmq/workers/proposal.worker.ts",
     "worker:auth": "nodemon --exec tsx src/bullmq/workers/auth.worker.ts",
-    "test:api": "newman run tests/postman/collection.json -e tests/postman/environment.json"
+    "test:api": "npx prisma db seed && newman run tests/postman/collection.json -e tests/postman/environment.json"
   },
   "keywords": [],
   "author": "",

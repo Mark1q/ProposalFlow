@@ -41,8 +41,8 @@ jobs:
           NODE_ENV=test
           ACCESS_TOKEN_SECRET=ci_access_secret_not_real
           REFRESH_TOKEN_SECRET=ci_refresh_secret_not_real
-          ACCESS_TOKEN_EXPIRY=900000
-          REFRESH_TOKEN_EXPIRY=604800000
+          ACCESS_TOKEN_EXPIRY=15m
+          REFRESH_TOKEN_EXPIRY=7d
           RESEND_API_KEY=dummy
           REDIS_HOST=redis
           REDIS_PORT=6379

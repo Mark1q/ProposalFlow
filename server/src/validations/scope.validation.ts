@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { ScopeInput } from "../interfaces/scope.interface";
+import { ScopeInput } from "../interfaces/scope.interface.js";
 
 const createScopeSchema: Joi.ObjectSchema<ScopeInput> = Joi.object({
   projectName: Joi.string().required(),

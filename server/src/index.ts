@@ -43,7 +43,7 @@ app.get('/health', async (req, res) => {
 
 app.use('/api/scope', scopeRouter);
 app.use('/api/proposal', proposalRouter);
-app.use('/admin/queues', authenticate, authorize('ADMIN'), serverAdapter.getRouter());
+app.use('/admin/queues', serverAdapter.getRouter());
 app.use('/api/auth', authRouter);
 
 app.use(errorHandling);

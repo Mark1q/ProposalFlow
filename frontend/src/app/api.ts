@@ -9,9 +9,8 @@ export async function callApi(proposalId: string): Promise<JSONValue> {
 
     const response: Response = await fetch(url, {
         method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        }
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
     })
 
     if(!response.ok) {

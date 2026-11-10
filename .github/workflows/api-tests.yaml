@@ -5,11 +5,13 @@ on:
     branches: [ "main" ]
     paths:
       - 'server/**'
-      - '.github/workflows/api-tests.yml'
+      - 'docker-compose.yaml'
+      - '.github/workflows/api-tests.yaml'
   pull_request:
     branches: [ "main" ]
     paths:
       - 'server/**'
+      - 'docker-compose.yaml'
 
 jobs:
   test-api:
@@ -19,28 +21,53 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Create .env file for Docker
-      - name: Create .env files
+      - name: Create env files
         run: |
-          echo "${{ secrets.SERVER_ENV_TEST }} >> ./server/.env"
-          echo "${{ secrets.GOOGLE_API_KEY }} >> ./ai-service/.env"
+          cat > .env <<EOF
+          POSTGRES_USER=postgres
+          POSTGRES_PASSWORD=ci_only_password
+          POSTGRES_DB=proposalflow
+          PORT=3000
+          REDIS_PORT=6379
+          NODE_ENV=test
+          RESEND_API_KEY=dummy
+          GOOGLE_API_KEY=dummy
+          CORS_ORIGINS=http://localhost:3001
+          EOF
+
+          cat > server/.env <<EOF
+          DATABASE_URL=postgresql://postgres:ci_only_password@db:5432/proposalflow?schema=public
+          PORT=3000
+          NODE_ENV=test
+          ACCESS_TOKEN_SECRET=ci_access_secret_not_real
+          REFRESH_TOKEN_SECRET=ci_refresh_secret_not_real
+          ACCESS_TOKEN_EXPIRY=900000
+          REFRESH_TOKEN_EXPIRY=604800000
+          RESEND_API_KEY=dummy
+          REDIS_HOST=redis
+          REDIS_PORT=6379
+          PYTHON_SERVICE_URL=http://ai-service:8000/generate
+          CORS_ORIGINS=http://localhost:3001
+          EOF
+
+          echo "GOOGLE_API_KEY=dummy" > ai-service/.env
 
       - name: Start containers
         run: docker compose up -d api worker-proposal worker-auth --build
 
       - name: Wait for API to be ready
         run: |
-          timeout 60s bash -c 'until curl --silent --fail --output /dev/null http://localhost:3000/health; do sleep 2; done'
+          timeout 120s bash -c 'until curl --silent --fail --output /dev/null http://localhost:3000/health; do sleep 2; done'
 
       - name: Install Newman
         run: npm install -g newman
-      
+
       - name: Run Postman Collection
         run: |
           newman run server/tests/postman/collection.json \
-          -e server/tests/postman/environment.json \
-          --reporters cli
-          
+            -e server/tests/postman/environment.json \
+            --reporters cli
+
       - name: Dump Docker logs on failure
         if: failure()
-        run: docker compose logs api
+        run: docker compose logs

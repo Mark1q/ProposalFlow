@@ -7,7 +7,6 @@ import { generalLimiter, proposalLimiter } from "../middleware/rate-limit.js";
 
 const proposalRouter = express.Router();
 
-// TODO: add authenticate middleware to GET endpoints
 
 proposalRouter.post('/start', proposalLimiter, authenticate, validate(createProposalSchema), createProposal);
 proposalRouter.get('/:id/status', generalLimiter, authenticate, getProposalStatus);

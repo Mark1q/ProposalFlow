@@ -11,11 +11,11 @@ import { DUMMY_HASH } from "../constants.js";
 import { config } from "../config/env.variables.js"
 
 declare global {
-  namespace Express {
-    interface Request {
-      user?: { id: string };
+    namespace Express {
+        interface Request {
+            user?: { id: string };
+        }
     }
-  }
 }
 
 const hashToken = (token: string): string => {
@@ -55,12 +55,14 @@ const registerUser = async (req: Request<{}, {}, RegisterInput>, res: Response, 
             maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
             httpOnly: true,
             sameSite: 'strict',
+            secure: config.node_env === 'production',
             path: '/api/auth/refresh'
         })
 
         res.cookie('accessToken', accessToken, {
             maxAge: 15 * 60 * 1000, // 15 minutes
             httpOnly: true,
+            secure: config.node_env === 'production',
             sameSite: 'strict'
         });
 
@@ -78,14 +80,14 @@ const registerUser = async (req: Request<{}, {}, RegisterInput>, res: Response, 
         if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
             return next(new AppError("User with this email already exists", 400));
         }
-        
+
         return next(new AppError(error instanceof Error ? error.message : "Internal server error", 500));
     }
 };
 
 const loginUser = async (req: Request<{}, {}, LoginInput>, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
-    
+
     try {
         const user = await prisma.user.findUnique({
             where: {
@@ -98,7 +100,7 @@ const loginUser = async (req: Request<{}, {}, LoginInput>, res: Response, next: 
 
         if (!user || !isMatch) { return next(new AppError("Invalid email or password", 401)); }
 
-        
+
         const accessToken = await signAccessToken(user.id);
         const refreshToken = await signRefreshToken(user.id);
 
@@ -160,17 +162,17 @@ const logoutUser = async (req: Request, res: Response, next: NextFunction) => {
         sameSite: 'strict',
         secure: config.node_env === 'production'
     });
-    
+
     res.clearCookie("refreshToken", {
-        path: '/api/auth/refresh', 
+        path: '/api/auth/refresh',
         httpOnly: true,
         secure: config.node_env === 'production',
         sameSite: 'strict',
     });
 
-    return res.status(200).json({ 
-        status: "success", 
-        message: "Logged out successfully" 
+    return res.status(200).json({
+        status: "success",
+        message: "Logged out successfully"
     });
 }
 
@@ -184,10 +186,10 @@ const refreshAccessToken = async (req: Request, res: Response, next: NextFunctio
     try {
         const jwtPayload = await verifyToken(token, 'refresh');
 
-        if (!jwtPayload || !jwtPayload.sub) { 
+        if (!jwtPayload || !jwtPayload.sub) {
             res.clearCookie("accessToken", { httpOnly: true, sameSite: 'strict' });
             res.clearCookie("refreshToken", { path: '/api/auth/refresh', httpOnly: true, sameSite: 'strict' });
-            return next(new AppError("Invalid or expired refresh token", 401)); 
+            return next(new AppError("Invalid or expired refresh token", 401));
         }
 
         const userId = jwtPayload.sub as string;
@@ -240,7 +242,7 @@ const refreshAccessToken = async (req: Request, res: Response, next: NextFunctio
         });
 
         res.cookie('accessToken', accessToken, {
-            maxAge: 15 * 60 * 1000, 
+            maxAge: 15 * 60 * 1000,
             httpOnly: true,
             secure: config.node_env === 'production',
             sameSite: 'strict'

@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { AppError } from "../utils/AppError.js";
 import { verifyToken } from "../lib/auth.tokens.js";
+import { errors } from "jose";
 
 const authenticate = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.accessToken;
@@ -21,17 +22,15 @@ const authenticate = async (req: Request, res: Response, next: NextFunction) => 
         };
         
         next();
-    } catch (error: any) {
-        if (error.name === "TokenExpiredError") {
-            return next(new AppError("Token has expired. Please log in again.", 401));
-        }
-
-        if (error.name === "JsonWebTokenError") {
-            return next(new AppError("Invalid token signature.", 401));
-        }
-        
-        return next(error);
+    } catch (error) {
+    if (error instanceof errors.JWTExpired) {
+        return next(new AppError("Token has expired. Please log in again.", 401));
     }
+    if (error instanceof errors.JOSEError) {
+        return next(new AppError("Invalid token.", 401));
+    }
+    return next(error);
+}
 }
 
 export { authenticate }
